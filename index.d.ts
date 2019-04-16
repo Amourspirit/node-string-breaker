@@ -1,15 +1,30 @@
 /**
+ * Split string kind
+ */
+export declare enum splitByOpt {
+    /** split by Width */
+    width = 0,
+    /**
+     * Split by word
+     * Defult
+     */
+    word = 1,
+    /** Split by line */
+    line = 2
+}
+/**
  * Line ending options
  */
 export declare enum lnEndOpt {
     /** Take no action */
     none = 0,
-    /** Remove Line Break */
+    /**
+     * Remove Line Break
+     * Default
+     * */
     noLnBr = 1,
     /** Encode line breaks as \\n */
-    encode = 2,
-    /** Width options will be ignored and lines will be split by eol */
-    splitByEol = 3
+    encode = 2
 }
 /**
  * Flags for Width output options
@@ -27,10 +42,12 @@ export declare enum widthFlags {
     none = 0,
     /**
      * Fullwidth chars will count for two positions
+     * @see {@link https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms}
      */
     fullwidth = 1,
     /**
      * Surrogae Pairs will count for two positions
+     * @see {@link https://en.wikipedia.org/wiki/UTF-16}
      */
     surrogatePair = 2
 }
@@ -79,6 +96,11 @@ export interface IStringBreakOpt {
      * Flags for Width output options
      */
     lenOpt?: widthFlags;
+    /**
+     * Option to break string.
+     * Width, word, eol
+     */
+    splitOpt?: splitByOpt;
 }
 /**
  * Breaks a string into a string array
@@ -86,25 +108,57 @@ export interface IStringBreakOpt {
  * @param opt parameters to affect the output.
  * Can be number or {@link IStringBreakOpt}
  * If a number is passed in it becomes the width for the output.
+ * If no parameter is passed then output will be broken into string array
+ * with 80 characters per element.
+ *
+ ```typescript
+let x: string[];
+x = stringBreaker('some long text');
+// is the same as
+x = stringBreaker('some long text', 80),
+// is the same as
+x = stringBreaker('some long text' {width: 80});
+ ```
  *
  * Example:
+ ```typescript
+ *
+ * import { stringBreaker } from 'string-breaker';
+ *
+ * let x = stringBreaker('The quick brown fox jumped over the lazy dog', 5);
+ * // x => ['The q','uick ','brown',' fox ','jumpe','d ove','r the',' lazy',' dog']
+ *
+ * x = stringBreaker('Hello World\nNice 😇\nhmm... ', 5);
+ * // x => ['Hello', ' Worl', 'dNice', ' 😇hmm', '... ']
+ *
+ * x = stringBreaker('\uD83D\uDE07Hello World\nNice 😇\nhmm...', 6);
+ * // x => ['😇Hello', ' World', 'Nice 😇', 'hmm...']
+ *
+ * x = stringBreaker('\uD83D\uDE07Hello World\nNice 😇\r\nhmm...', {
+ *     width: 6,
+ *     lnEnd: lnEndOpt.encode
+ *     });
+ * // x => ['😇Hello', ' World', '\\nNice', ' 😇\\nhm', 'm...']
+ ```
+ *
+ * Split by End of Line
+ * stringBreaker can split by eol by setting option lnEnd: lnEndOpt.splitByEol
+ *
+ * Example Splitting by End of Line:
 ```typescript
 import { stringBreaker } from 'string-breaker';
 
-let x = stringBreaker('The quick brown fox jumped over the lazy dog', 5);
-// x => ['The q','uick ','brown',' fox ','jumpe','d ove','r the',' lazy',' dog']
+// mixing \n and \r will result in the same output
+let strSrc = 'Happy cat.'
+strSrc += '\nThe quick brown fox jumped over the lazy dog.';
+strSrc += '\r\nThe moon is full tonight.\rI like full moons!';
 
-x = stringBreaker('Hello World\nNice 😇\nhmm... ', 5);
-// x => ['Hello', ' Worl', 'dNice', ' 😇hmm', '... ']
-
-x = stringBreaker('\uD83D\uDE07Hello World\nNice 😇\nhmm...', 6);
-// x => ['😇Hello', ' World', 'Nice 😇', 'hmm...']
-
-x = stringBreaker('\uD83D\uDE07Hello World\nNice 😇\r\nhmm...', {
-    width: 6,
-    lnEnd: lnEndOpt.encode
-    });
-// x => ['😇Hello', ' World', '\\nNice', ' 😇\\nhm', 'm...']
+const x = stringBreaker(strSrc, { lnEnd: lnEndOpt.splitByEol });
+// x => [
+//  'Happy cat.',
+//  'The quick brown fox jumped over the lazy dog.',
+//  'The moon is full tonight.',
+//  'I like full moons!' ]
 ```
  */
 export declare const stringBreaker: (str: string, opt?: number | IStringBreakOpt | undefined) => string[];

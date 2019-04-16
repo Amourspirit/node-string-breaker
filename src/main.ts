@@ -1,17 +1,32 @@
 import { codePointFullWidth } from 'utf16-char-codes';
 // #region enums
 /**
+ * Split string kind
+ */
+export enum splitByOpt {
+  /** split by Width */
+  width,
+  /**
+   * Split by word  
+   * Defult
+   */
+  word,
+  /** Split by line */
+  line
+}
+/**
  * Line ending options
  */
 export enum lnEndOpt {
   /** Take no action */
   none,
-  /** Remove Line Break */
+  /**
+   * Remove Line Break  
+   * Default
+   * */
   noLnBr,
   /** Encode line breaks as \\n */
-  encode,
-  /** Width options will be ignored and lines will be split by eol */
-  splitByEol
+  encode
 }
 
 /**
@@ -87,6 +102,11 @@ export enum widthFlags {
    * Flags for Width output options
    */
    lenOpt?: widthFlags;
+   /**
+    * Option to break string.  
+    * Width, word, eol
+    */
+   splitOpt?: splitByOpt;
 }
 // #endregion
 
@@ -159,28 +179,39 @@ export const stringBreaker = (str: string, opt?: IStringBreakOpt | number): stri
     lnEnd: lnEndOpt.noLnBr,
     noExSp: false,
     noBOM: true,
-    lenOpt: widthFlags.none
+    lenOpt: widthFlags.none,
+    splitOpt: splitByOpt.width
   }, opt);
-  switch (options.lnEnd) {
-    case lnEndOpt.encode:
-      str = encodeLnBr(str);
-      break;
-    case lnEndOpt.noLnBr:
-      str = removeLnBr(str);
-      break
-    case lnEndOpt.splitByEol:
-      str = cleanLnBr(str);
-      break;
-    default:
-      break;
+
+  // only remove or encode line beaks when splitting by width
+  if (options.splitOpt === splitByOpt.width) {
+    switch (options.lnEnd) {
+      case lnEndOpt.encode:
+        str = encodeLnBr(str);
+        break;
+      case lnEndOpt.noLnBr:
+        str = removeLnBr(str);
+        break
+      default:
+        break;
+    }
   }
+  let result: string[];
   if (options.noExSp === true) {
     str = removeExSp(str);
   }
-  if (options.lnEnd === lnEndOpt.splitByEol) {
-    return breakStrByEol(str, options);
+  switch (options.splitOpt) {
+    case splitByOpt.word:
+      result = breakStrByEolWord(str, options);
+      break;
+    case splitByOpt.line:
+      result = breakStrByEolWord(str, options);
+      break;
+    default:
+      result = breakStrByCodePoint(str, options);
+      break;
   }
-  return breakStrByCodePoint(str, options);
+  return result;
 }
 // #endregion
 
@@ -217,30 +248,50 @@ const getOptions = (defaultOptions: IStringBreakOpt, options?: IStringBreakOpt |
   if (options.lenOpt === undefined) {
     options.lenOpt = widthFlags.none;
   }
+  if (options.splitOpt === undefined) {
+    options.splitOpt = splitByOpt.width;
+  }
   return options;
 }
-const breakStrByEol = (str: string, opt: IStringBreakOpt): string[] => {
+const breakStrByEolWord = (str: string, opt: IStringBreakOpt): string[] => {
   // eol has allready been cleaned at this point
   // all eol are \n
   let results: string[] = []
   if (str.length === 0) {
-    results.push('');
+    // results.push('');
     return results;
   }
-  results = str.split(/\n/);
   let noBom: boolean = false;
   if (opt.noBOM === true) {
     noBom = true;
   }
-  if (noBom === true && results.length > 0) {
-    let strFirst = results[0];
-    if (strFirst.length > 0) {
-      const cp: number = Number(strFirst.codePointAt(0));
-      if (isBom(cp) === true) {
-        strFirst = strFirst.substr(1);
-        results[0] = strFirst;
+  if (noBom === true) {
+    const cp: number = Number(str.codePointAt(0));
+    if (isBom(cp) === true) {
+      str = str.substr(1);
+      if (str.length === 0) {
+        // results.push('');
+        return results;
       }
     }
+  }
+  str = cleanLnBr(str); // clean the line breaks just in case irregular
+  if (opt.splitOpt === splitByOpt.word) {
+    // important to call clean white space after removing BOM
+    // otherwise BOM would be converted to space.
+    str = whiteSpToSp(str); // all whites sapce (tab, \n multi space) to single space
+    str = str.trim();
+    if (str.length === 0) {
+      return results; // return empty array if empty string
+    }
+    // all extra spaces have been replace by
+    // a single space at this point
+    results = str.split(' ');  
+  } else {
+    if (str.length === 0) {
+      return results; // return empty array if empty string
+    }
+    results = str.split(/\n/);
   }
   return results;
 }
@@ -325,25 +376,47 @@ const breakStrByCodePoint = (str: string, opt: IStringBreakOpt): string[] => {
 }
 /**
  * @hidden
+ * This replaces all instance of the \r\n then replaces all \n then finally
+ * replaces all \r. It goes through and removes all types of line breaks
+ * @param str String to replace line breaks in
  */
 const removeLnBr = (str: string): string => {
   if (str.length === 0) {
     return '';
   }
-  // This replaces all instance of the \r\n then replaces all \n then finally
-  // replaces all \r. It goes through and removes all types of line breaks
   return str.replace(/(\r\n|\n|\r)/gm, '');
 }
+/**
+ * @hidden
+ * This replaces all instance of whitespace with a single space
+ * @param str String to replace witespaces with space
+ * 
+ * BOM qualifys as whitespace. If the str has a BOM it will be
+ * replaced by a single space
+ */
+const whiteSpToSp = (str: string): string => {
+  if (str.length === 0) {
+    return '';
+  }
+  // This replaces all instance of whitespace with a single space
+  return str.replace(/\s+/gm, ' ');
+}
+/**
+ * @hidden
+ * This replaces all instance of the \r\n then replaces all \r.
+ * It goes through and replaces all line breaks that are not strictly \n
+ * @param str String to clean line breaks
+ */
 const cleanLnBr = (str: string): string => {
   if (str.length === 0) {
     return '';
   }
-  // This replaces all instance of the \r\n then replaces all \r.
-  // It goes through and replaces all line breaks that are not strictly \n
   return str.replace(/(\r\n|\r)/gm, '\n');
 }
 /**
  * @hidden
+ * Replces two or spaces with a single space
+ * @param str The string to repace in
  */
 const removeExSp = (str: string): string => {
   if (str.length === 0) {
@@ -354,12 +427,18 @@ const removeExSp = (str: string): string => {
 }
 /**
  * @hidden
+ * Encodes linebreaks as \n
+ * Any mix of \r \n becomes \n
+ * @param str The string to repace in
  */
 const encodeLnBr = (str: string): string => {
   return str.replace(/(\r\n|\n|\r)/gm, '\\n');
 }
 /**
  * @hidden
+ * Checkes to see if a number represents a surrogate pair
+ * @param cp the number to test representing a unicode code point
+ * @returns true if cp is unicode surrogate pair; Otherwise, false
  */
 const isSurrogatePair = (cp: number): boolean => {
   if (cp >= 0x10000) {
@@ -371,6 +450,11 @@ const isSurrogatePair = (cp: number): boolean => {
 // // UTF-8 including a BOM is not needed and discouraged
 /**
  * @hidden
+ * Checks to see if a number represents a byte order mark
+ * @param cp the number to test
+ * @returns true if cp matches BOM; Otherwise, false.
+ * 
+ * Supports UTF-8, UTF-16, UTF-7
  */
 const isBom = (cp: number): boolean => {
   if (

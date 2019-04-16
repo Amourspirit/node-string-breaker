@@ -12,12 +12,17 @@ var __assign = (this && this.__assign) || function () {
 };
 exports.__esModule = true;
 var utf16_char_codes_1 = require("utf16-char-codes");
+var splitByOpt;
+(function (splitByOpt) {
+    splitByOpt[splitByOpt["width"] = 0] = "width";
+    splitByOpt[splitByOpt["word"] = 1] = "word";
+    splitByOpt[splitByOpt["line"] = 2] = "line";
+})(splitByOpt = exports.splitByOpt || (exports.splitByOpt = {}));
 var lnEndOpt;
 (function (lnEndOpt) {
     lnEndOpt[lnEndOpt["none"] = 0] = "none";
     lnEndOpt[lnEndOpt["noLnBr"] = 1] = "noLnBr";
     lnEndOpt[lnEndOpt["encode"] = 2] = "encode";
-    lnEndOpt[lnEndOpt["splitByEol"] = 3] = "splitByEol";
 })(lnEndOpt = exports.lnEndOpt || (exports.lnEndOpt = {}));
 var widthFlags;
 (function (widthFlags) {
@@ -34,28 +39,37 @@ exports.stringBreaker = function (str, opt) {
         lnEnd: lnEndOpt.noLnBr,
         noExSp: false,
         noBOM: true,
-        lenOpt: widthFlags.none
+        lenOpt: widthFlags.none,
+        splitOpt: splitByOpt.width
     }, opt);
-    switch (options.lnEnd) {
-        case lnEndOpt.encode:
-            str = encodeLnBr(str);
-            break;
-        case lnEndOpt.noLnBr:
-            str = removeLnBr(str);
-            break;
-        case lnEndOpt.splitByEol:
-            str = cleanLnBr(str);
-            break;
-        default:
-            break;
+    if (options.splitOpt === splitByOpt.width) {
+        switch (options.lnEnd) {
+            case lnEndOpt.encode:
+                str = encodeLnBr(str);
+                break;
+            case lnEndOpt.noLnBr:
+                str = removeLnBr(str);
+                break;
+            default:
+                break;
+        }
     }
+    var result;
     if (options.noExSp === true) {
         str = removeExSp(str);
     }
-    if (options.lnEnd === lnEndOpt.splitByEol) {
-        return breakStrByEol(str, options);
+    switch (options.splitOpt) {
+        case splitByOpt.word:
+            result = breakStrByEolWord(str, options);
+            break;
+        case splitByOpt.line:
+            result = breakStrByEolWord(str, options);
+            break;
+        default:
+            result = breakStrByCodePoint(str, options);
+            break;
     }
-    return breakStrByCodePoint(str, options);
+    return result;
 };
 var getOptions = function (defaultOptions, options) {
     if (options === null || options === undefined ||
@@ -82,28 +96,43 @@ var getOptions = function (defaultOptions, options) {
     if (options.lenOpt === undefined) {
         options.lenOpt = widthFlags.none;
     }
+    if (options.splitOpt === undefined) {
+        options.splitOpt = splitByOpt.width;
+    }
     return options;
 };
-var breakStrByEol = function (str, opt) {
+var breakStrByEolWord = function (str, opt) {
     var results = [];
     if (str.length === 0) {
-        results.push('');
         return results;
     }
-    results = str.split(/\n/);
     var noBom = false;
     if (opt.noBOM === true) {
         noBom = true;
     }
-    if (noBom === true && results.length > 0) {
-        var strFirst = results[0];
-        if (strFirst.length > 0) {
-            var cp = Number(strFirst.codePointAt(0));
-            if (isBom(cp) === true) {
-                strFirst = strFirst.substr(1);
-                results[0] = strFirst;
+    if (noBom === true) {
+        var cp = Number(str.codePointAt(0));
+        if (isBom(cp) === true) {
+            str = str.substr(1);
+            if (str.length === 0) {
+                return results;
             }
         }
+    }
+    str = cleanLnBr(str); 
+    if (opt.splitOpt === splitByOpt.word) {
+        str = whiteSpToSp(str); 
+        str = str.trim();
+        if (str.length === 0) {
+            return results; 
+        }
+        results = str.split(' ');
+    }
+    else {
+        if (str.length === 0) {
+            return results; 
+        }
+        results = str.split(/\n/);
     }
     return results;
 };
@@ -182,11 +211,17 @@ var removeLnBr = function (str) {
     }
     return str.replace(/(\r\n|\n|\r)/gm, '');
 };
+var whiteSpToSp = function (str) {
+    if (str.length === 0) {
+        return '';
+    }
+    return str.replace(/\s+/gm, ' ');
+};
 var cleanLnBr = function (str) {
     if (str.length === 0) {
         return '';
     }
-    return str.replace(/(\r\n|\n|\r)/gm, '\n');
+    return str.replace(/(\r\n|\r)/gm, '\n');
 };
 var removeExSp = function (str) {
     if (str.length === 0) {

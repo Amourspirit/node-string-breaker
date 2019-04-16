@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { stringBreaker, lnEndOpt, widthFlags } from '../src/main';
+import { stringBreaker, lnEndOpt, widthFlags, splitByOpt } from '../src/main';
 import randomstring from 'randomstring';
 import fs from 'fs';
 import mkdirp = require('mkdirp');
@@ -198,38 +198,143 @@ describe('String Breaker test', () => {
     }).to.throw(RangeError);
     done();
   });
-  it('should break a string with BOM by eol and remove the BOM', (done) => {
+  it('should break a string by line with BOM by eol and remove the BOM', (done) => {
     // include BOM and \n \r varations
     const strSrc = '\ufeff' + 'Happy cat.\nThe quick brown fox jumped over the lazy dog.\r\nThe moon is full tonight.\rI like full moons!';
     const result = stringBreaker(strSrc, {
-      width: 10, // width will be ignored due to splitByEol
-      lnEnd: lnEndOpt.splitByEol
+      width: 10, // width will be ignored due to splitByOpt.line
+      splitOpt: splitByOpt.line
     });
-    expect(result[0].length).equal(10); // BOM has been removed
     expect(result.length).equal(4);
+    expect(result[0]).equal('Happy cat.'); // BOM has been removed
+    expect(result[1]).equal('The quick brown fox jumped over the lazy dog.');
+    expect(result[2]).equal('The moon is full tonight.');
+    expect(result[3]).equal('I like full moons!');
     done();
   });
-  it('should break a string with only a BOM by eol and remove the BOM', (done) => {
+  it('should break an empty string by line by eol and return 0 length string array', (done) => {
+    const strSrc = '';
+    const result = stringBreaker(strSrc, {
+      splitOpt: splitByOpt.line
+    });
+    expect(result.length).equal(0);
+    done();
+  });
+  it('should break 🧀😊😀😃😄😁\\n😃😄😁🧀😊😀 by line by eol and return 2 length string array', (done) => {
+    const strSrc = '🧀😊😀😃😄😁\n😃😄😁🧀😊😀';
+    const result = stringBreaker(strSrc, {
+      splitOpt: splitByOpt.line
+    });
+    expect(result.length).equal(2);
+    expect(result[0]).equal('🧀😊😀😃😄😁');
+    expect(result[1]).equal('😃😄😁🧀😊😀');
+    done();
+  });
+  it('should break a string by line with only a BOM by eol and return 0 length string array', (done) => {
     const strSrc = '\ufeff'; // Byte order mark
     const result = stringBreaker(strSrc, {
-      lnEnd: lnEndOpt.splitByEol
+      splitOpt: splitByOpt.line
     });
-    expect(result.length).equal(1);
-    expect(result[0].length).equal(0); // BOM has been removed
+    expect(result.length).equal(0);
     done();
   });
   /**
    * Test to check and see that breaking an empty string by end of line
-   * results in a string array with a length of 1 and the one element has
-   * a string length of 0.
+   * results in a string array with a length of 0
    */
-  it('should break a empty string by eol', (done) => {
+  it('should break a empty string by eol and return string array with zero elements', (done) => {
     const strSrc = '';
     const result = stringBreaker(strSrc, {
-      lnEnd: lnEndOpt.splitByEol,
+      splitOpt: splitByOpt.line
     });
-    expect(result.length).equal(1);
-    expect(result[0].length).equal(0);
+    expect(result.length).equal(0);
+    done();
+  });
+  it('should break a string into words with BOM and iregular line breaks by word and remove the BOM', (done) => {
+    // include BOM and \n \r varations
+    const strSrc = '\ufeff' + 'Happy cat.\nThe quick brown fox jumped over the lazy dog.\r\nThe moon is full tonight.\rI like full moons!';
+    const result = stringBreaker(strSrc, {
+      width: 10, // width will be ignored due to splitByOpt.word
+      splitOpt: splitByOpt.word
+    });
+    expect(result.length).equal(20);
+    expect(result[0]).equal('Happy');
+    expect(result[1]).equal('cat.');
+    expect(result[2]).equal('The');
+    expect(result[3]).equal('quick');
+    expect(result[4]).equal('brown');
+    expect(result[5]).equal('fox');
+    expect(result[6]).equal('jumped');
+    expect(result[7]).equal('over');
+    expect(result[8]).equal('the');
+    expect(result[9]).equal('lazy');
+    expect(result[10]).equal('dog.');
+    expect(result[11]).equal('The');
+    expect(result[12]).equal('moon');
+    expect(result[13]).equal('is');
+    expect(result[14]).equal('full');
+    expect(result[15]).equal('tonight.');
+    expect(result[16]).equal('I');
+    expect(result[17]).equal('like');
+    expect(result[18]).equal('full');
+    expect(result[19]).equal('moons!');
+    done();
+  });
+  it('should break a string into words with BOM, tabs and extra spaces by word and remove the BOM', (done) => {
+    // include BOM and \n \r varations
+    const strSrc = '\ufeff' + '\t\t\t  Happy cat.\nThe\tquick\t\t   brown    fox  \t   jumped over the lazy dog.\r\nThe moon is full tonight.\rI like full moons!';
+    const result = stringBreaker(strSrc, {
+      width: 10, // width will be ignored due to splitByOpt.word
+      splitOpt: splitByOpt.word
+    });
+    expect(result.length).equal(20);
+    expect(result[0]).equal('Happy');
+    expect(result[1]).equal('cat.');
+    expect(result[2]).equal('The');
+    expect(result[3]).equal('quick');
+    expect(result[4]).equal('brown');
+    expect(result[5]).equal('fox');
+    expect(result[6]).equal('jumped');
+    expect(result[7]).equal('over');
+    expect(result[8]).equal('the');
+    expect(result[9]).equal('lazy');
+    expect(result[10]).equal('dog.');
+    expect(result[11]).equal('The');
+    expect(result[12]).equal('moon');
+    expect(result[13]).equal('is');
+    expect(result[14]).equal('full');
+    expect(result[15]).equal('tonight.');
+    expect(result[16]).equal('I');
+    expect(result[17]).equal('like');
+    expect(result[18]).equal('full');
+    expect(result[19]).equal('moons!');
+    done();
+  });
+  it('should break "🧀\\n😊 😀😃 😄 😁 😃😄\\n 😁🧀😊😀  " by word by eol and return 7 length string array', (done) => {
+    const strSrc = '🧀\n😊 😀😃 😄 😁 😃😄\n 😁🧀😊😀  ';
+    const result = stringBreaker(strSrc, {
+      splitOpt: splitByOpt.word
+    });
+    expect(result.length).equal(7);
+    expect(result[0]).equal('🧀');
+    expect(result[1]).equal('😊');
+    expect(result[2]).equal('😀😃');
+    expect(result[3]).equal('😄');
+    expect(result[4]).equal('😁');
+    expect(result[5]).equal('😃😄');
+    expect(result[6]).equal('😁🧀😊😀');
+    done();
+  });
+  /**
+   * Test to check and see that breaking an empty string by end of line
+   * results in a string array with a length of 0
+   */
+  it('should break a white space string by word and return a string array with zero elements', (done) => {
+    const strSrc = '\n  \t \t\t\r\n\r  ';
+    const result = stringBreaker(strSrc, {
+      splitOpt: splitByOpt.word
+    });
+    expect(result.length).equal(0);
     done();
   });
 });
