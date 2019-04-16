@@ -5,7 +5,7 @@
 <p align="center">
 <a href="https://travis-ci.org/Amourspirit/node-string-breaker"><img src="https://travis-ci.org/Amourspirit/node-string-breaker.svg?branch=master" /></a>
 <a href="https://snyk.io/test/github/Amourspirit/node-string-breaker?targetFile=package.json"><img src="https://snyk.io/test/github/Amourspirit/node-string-breaker/badge.svg?targetFile=package.json" /></a> <img src="https://img.shields.io/github/package-json/v/Amourspirit/node-string-breaker.svg" />
-<img src="https://img.shields.io/github/license/Amourspirit/node-string-breaker.svg" /><a href="https://github.com/badges/stability-badges"> <img src="https://badges.github.io/stability-badges/dist/experimental.svg" /></a>
+<img src="https://img.shields.io/github/license/Amourspirit/node-string-breaker.svg" /><a href="https://github.com/badges/stability-badges"> <img src="https://badges.github.io/stability-badges/dist/stable.svg" /></a>
 </p>
 
 # string-breaker
