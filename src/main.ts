@@ -325,6 +325,12 @@ const getOptions = (defaultOptions: IStringBreakOpt, options?: IStringBreakOpt |
   }
   return options;
 }
+/**
+ * @hidden
+ * Breaks string by word or by line
+ * @param str String to break
+ * @param opt Options to apply
+ */
 const breakStrByEolWord = (str: string, opt: IStringBreakOpt): string[] => {
   // eol has allready been cleaned at this point
   // all eol are \n
