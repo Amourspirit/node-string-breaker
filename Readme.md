@@ -14,7 +14,11 @@
 
 # string-breaker
 
-## Break string into array of uniform lines
+## Break string into array
+
+* string array with elements that are a specific width
+* string array with elements for each line
+* string array with element fo reach word
 
 ## Documentation
 
@@ -76,22 +80,40 @@ x = stringBreaker('\uD83D\uDE07    Hello     World\nNice    😇 \r\nhmm...', {
 ```
 
 Split by End of Line  
-**stringBreaker** can split by eol by setting option *lnEnd: lnEndOpt.splitByEol*
+**stringBreaker** can split by eol by setting option *splitOpt: splitByOpt.line*
 
 ```typescript
 import { stringBreaker } from 'string-breaker';
 
 // mixing \n and \r will result in the same output
-let strSrc = 'Happy cat.'
+let strSrc = 'Happy cat.';
 strSrc += '\nThe quick brown fox jumped over the lazy dog.';
 strSrc += '\r\nThe moon is full tonight.\rI like full moons!';
 
-const x = stringBreaker(strSrc, { lnEnd: lnEndOpt.splitByEol });
+const x = stringBreaker(strSrc, { splitOpt: splitByOpt.line });
 // x => [
 //  'Happy cat.',
 //  'The quick brown fox jumped over the lazy dog.',
 //  'The moon is full tonight.',
 //  'I like full moons!' ]
+```
+
+Split by Words
+**stringBreaker** can split into words by setting option *splitOpt: splitByOpt.word*
+
+```typescript
+import { stringBreaker } from 'string-breaker';
+
+// mixing \n and \r will result in the same output
+let strSrc = 'Happy cat.';
+strSrc += '\nThe quick   brown\t\t fox jumped over the lazy dog.';
+strSrc += '\r\nThe moon is full tonight.\rI like full moons!';
+
+const x = stringBreaker(strSrc, { splitOpt: splitByOpt.word });
+// x => [ 'Happy','cat.','The','quick','brown','fox','jumped',
+//        'over','the','lazy','dog.','The','moon','is','full',
+//        'tonight.','I','like','full','moons!' ]
+
 ```
 
 **stringBreaker** by default will use code points to build output; however, this can be switched to character length by setting [lenOpt](https://amourspirit.github.io/node-string-breaker/enums/_main_.lnendopt.html) of [stringBreaker](https://amourspirit.github.io/node-string-breaker/modules/_main_.html#stringbreaker) [options](https://amourspirit.github.io/node-string-breaker/interfaces/_main_.istringbreakopt.html).

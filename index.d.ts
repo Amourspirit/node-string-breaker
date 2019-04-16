@@ -2,7 +2,7 @@
  * Split string kind
  */
 export declare enum splitByOpt {
-    /** split by Width */
+    /** Split by Width */
     width = 0,
     /**
      * Split by word
@@ -52,23 +52,79 @@ export declare enum widthFlags {
     surrogatePair = 2
 }
 /**
- * @property width Width to break string at.
- * Default 80.
- * See: {@link IStringBreakOpt.width}
- * @property lnEnd Options for line endings
- * Type of {@link lnEndOpt}
- * See: {@link IStringBreakOpt.lnEnd}
- * @property noExSp If true extra spaces will be removed from the output.
- * Default false.
- * See: {@link IStringBreakOpt.noExSp}
- * @property noBOM Determins if BOM will be part of the output if it exist.
- * If false BOM will be included.
- * Default true.
- * See: {@link IStringBreakOpt.noBOM}
- * @property lenOpt Flags for Width output options of type
- * Type of {@link widthFlags}
- * See: {@link IStringBreakOpt.noBOM}
- * @see {@link stringBreaker}
+ * Options for {@link stringBreaker}
+ *
+ * Example to split string contains elemets of 10
+```typescript
+const opt: IStringBreakOpt = { width: 10 }
+```
+ *
+ * Example to split string contains elemets of 40
+ * and encode line endings into \n
+```typescript
+ * const opt: IStringBreakOpt = {
+ *   width: 40,
+ *   lnEnd: lnEndOpt.encode
+ *  }
+```
+ *
+ * Example to split string contains elemets of 40
+ * and keep Byte order mark if it exist
+```typescript
+ * const opt: IStringBreakOpt = {
+ *   width: 40,
+ *   noBOM: false
+ *  }
+```
+ *
+ * Example to split string contains one element per line
+```typescript
+const opt: IStringBreakOpt = { splitOpt: splitByOpt.line }
+```
+ *
+ * Example to split string contains one element per word
+```typescript
+const opt: IStringBreakOpt = { splitOpt: splitByOpt.word }
+```
+ *
+ * Example to split string contains elemets base up if the
+ * character is fullwidth or halfwidth.
+ *
+ * Fullwidth chars would take up two positions in the element.
+ *
+ * Halfwidth chars would take up one postion in the element.
+```typescript
+ * const opt: IStringBreakOpt = {
+ *   width: 40,
+ *   lenOpt: widthFlags.fullwidth
+ *  }
+```
+ *
+ * Example to split string contains elemets base up if the
+ * character is a surrogate pair.
+ *
+ * Surrogate pair chars would take up two positions in the element.
+```typescript
+ * const opt: IStringBreakOpt = {
+ *   width: 40,
+ *   lenOpt: widthFlags.surrogatePair
+ *  }
+```
+ *
+ * Example to split string contains elemets base up if the
+ * character is fullwidth, halfwidth or surrogate pair.
+ *
+ * Fullwidth chars would take up two positions in the element.
+ *
+ * Halfwidth chars would take up one postion in the element.
+ *
+ * Surrogate pair chars would take up two positions in the element.
+```typescript
+ * const opt: IStringBreakOpt = {
+ *   width: 100,
+ *   lenOpt: widthFlags.fullwidth | widthFlags.surrogatePair
+ *  }
+```
  */
 export interface IStringBreakOpt {
     /**
@@ -149,16 +205,32 @@ x = stringBreaker('some long text' {width: 80});
 import { stringBreaker } from 'string-breaker';
 
 // mixing \n and \r will result in the same output
-let strSrc = 'Happy cat.'
+let strSrc = 'Happy cat.';
 strSrc += '\nThe quick brown fox jumped over the lazy dog.';
 strSrc += '\r\nThe moon is full tonight.\rI like full moons!';
 
-const x = stringBreaker(strSrc, { lnEnd: lnEndOpt.splitByEol });
+const x = stringBreaker(strSrc, { splitOpt: splitByOpt.line });
 // x => [
 //  'Happy cat.',
 //  'The quick brown fox jumped over the lazy dog.',
 //  'The moon is full tonight.',
 //  'I like full moons!' ]
+```
+ *
+ * Example splitting by Word:
+```typescript
+import { stringBreaker } from 'string-breaker';
+
+// mixing \n and \r will result in the same output
+let strSrc = 'Happy cat.';
+strSrc += '\nThe quick   brown\t\t fox jumped over the lazy dog.';
+strSrc += '\r\nThe moon is full tonight.\rI like full moons!';
+
+const x = stringBreaker(strSrc, { splitOpt: splitByOpt.word });
+// x => [ 'Happy','cat.','The','quick','brown','fox','jumped',
+//        'over','the','lazy','dog.','The','moon','is','full',
+//        'tonight.','I','like','full','moons!' ]
+
 ```
  */
 export declare const stringBreaker: (str: string, opt?: number | IStringBreakOpt | undefined) => string[];
