@@ -4,8 +4,12 @@
 </p>
 <p align="center">
 <a href="https://travis-ci.org/Amourspirit/node-string-breaker"><img src="https://travis-ci.org/Amourspirit/node-string-breaker.svg?branch=master" /></a>
-<a href="https://snyk.io/test/github/Amourspirit/node-string-breaker?targetFile=package.json"><img src="https://snyk.io/test/github/Amourspirit/node-string-breaker/badge.svg?targetFile=package.json" /></a> <img src="https://img.shields.io/github/package-json/v/Amourspirit/node-string-breaker.svg" />
-<img src="https://img.shields.io/github/license/Amourspirit/node-string-breaker.svg" /><a href="https://github.com/badges/stability-badges"> <img src="https://badges.github.io/stability-badges/dist/stable.svg" /></a>
+<a href="https://snyk.io/test/github/Amourspirit/node-string-breaker?targetFile=package.json">
+<img src="https://snyk.io/test/github/Amourspirit/node-string-breaker/badge.svg?targetFile=package.json" /></a>
+<a href="https://www.npmjs.com/package/string-breaker"><img alt="node" src="https://img.shields.io/node/v/string-breaker.svg"></a>
+<img src="https://img.shields.io/github/package-json/v/Amourspirit/node-string-breaker.svg" />
+<img src="https://img.shields.io/github/license/Amourspirit/node-string-breaker.svg" />
+<a href="https://github.com/badges/stability-badges"> <img src="https://badges.github.io/stability-badges/dist/stable.svg" /></a>
 </p>
 
 # string-breaker
@@ -18,7 +22,7 @@ For more information view the [Documentation](https://amourspirit.github.io/node
 
 ### Install
 
-```
+```bash
 npm install --save string-breaker
 ```
 
@@ -71,9 +75,28 @@ x = stringBreaker('\uD83D\uDE07    Hello     World\nNice    😇 \r\nhmm...', {
 // x => ['😇 Hel', 'lo Wo', 'rldNi', 'ce 😇h', 'mm...']
 ```
 
-**stringBreaker** by default will use code points to build output; however, this can be switched to character length by setting **lenOpt** of stringBreaker options.
+Split by End of Line  
+**stringBreaker** can split by eol by setting option *lnEnd: lnEndOpt.splitByEol*
 
-With options is set to fullwitdh the output is built based upon if the code point for each char that is [fullwidth](https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms) will take two positions.
+```typescript
+import { stringBreaker } from 'string-breaker';
+
+// mixing \n and \r will result in the same output
+let strSrc = 'Happy cat.'
+strSrc += '\nThe quick brown fox jumped over the lazy dog.';
+strSrc += '\r\nThe moon is full tonight.\rI like full moons!';
+
+const x = stringBreaker(strSrc, { lnEnd: lnEndOpt.splitByEol });
+// x => [
+//  'Happy cat.',
+//  'The quick brown fox jumped over the lazy dog.',
+//  'The moon is full tonight.',
+//  'I like full moons!' ]
+```
+
+**stringBreaker** by default will use code points to build output; however, this can be switched to character length by setting [lenOpt](https://amourspirit.github.io/node-string-breaker/enums/_main_.lnendopt.html) of [stringBreaker](https://amourspirit.github.io/node-string-breaker/modules/_main_.html#stringbreaker) [options](https://amourspirit.github.io/node-string-breaker/interfaces/_main_.istringbreakopt.html).
+
+With options is set to [fullwitdh](https://amourspirit.github.io/node-string-breaker/enums/_main_.widthflags.html#fullwidth) the output is built based upon if the code point for each char that is [fullwidth](https://amourspirit.github.io/node-string-breaker/enums/_main_.widthflags.html#fullwidth) will take two positions.
 
 ```typescript
 import { stringBreaker } from 'string-breaker';
@@ -96,7 +119,7 @@ x = stringBreaker(str , {
 
 ```
 
-With options is set to surrogatePair the output is built based upon if the code point for each char that is **surrogate pair** will take two positions.
+With [options](https://amourspirit.github.io/node-string-breaker/interfaces/_main_.istringbreakopt.html) is set to [surrogatePair](https://amourspirit.github.io/node-string-breaker/enums/_main_.widthflags.html#surrogatepair) the output is built based upon if the code point for each char that is **surrogate pair** will take two positions.
 
 ```typescript
 import { stringBreaker } from 'string-breaker';
@@ -122,7 +145,7 @@ x = stringBreaker(str , {
 
 ```
 
-widthFlags can be set to combine options
+[widthFlags](https://amourspirit.github.io/node-string-breaker/enums/_main_.widthflags.html) can be set to combine options
 
 ```typescript
 import { stringBreaker } from 'string-breaker';

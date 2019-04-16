@@ -17,6 +17,7 @@ var lnEndOpt;
     lnEndOpt[lnEndOpt["none"] = 0] = "none";
     lnEndOpt[lnEndOpt["noLnBr"] = 1] = "noLnBr";
     lnEndOpt[lnEndOpt["encode"] = 2] = "encode";
+    lnEndOpt[lnEndOpt["splitByEol"] = 3] = "splitByEol";
 })(lnEndOpt = exports.lnEndOpt || (exports.lnEndOpt = {}));
 var widthFlags;
 (function (widthFlags) {
@@ -25,6 +26,9 @@ var widthFlags;
     widthFlags[widthFlags["surrogatePair"] = 2] = "surrogatePair";
 })(widthFlags = exports.widthFlags || (exports.widthFlags = {}));
 exports.stringBreaker = function (str, opt) {
+    if (typeof str !== 'string') {
+        throw new TypeError('stringBreaker: str parmeter must be of type string');
+    }
     var options = getOptions({
         width: 80,
         lnEnd: lnEndOpt.noLnBr,
@@ -39,11 +43,17 @@ exports.stringBreaker = function (str, opt) {
         case lnEndOpt.noLnBr:
             str = removeLnBr(str);
             break;
+        case lnEndOpt.splitByEol:
+            str = cleanLnBr(str);
+            break;
         default:
             break;
     }
     if (options.noExSp === true) {
         str = removeExSp(str);
+    }
+    if (options.lnEnd === lnEndOpt.splitByEol) {
+        return breakStrByEol(str, options);
     }
     return breakStrByCodePoint(str, options);
 };
@@ -73,6 +83,29 @@ var getOptions = function (defaultOptions, options) {
         options.lenOpt = widthFlags.none;
     }
     return options;
+};
+var breakStrByEol = function (str, opt) {
+    var results = [];
+    if (str.length === 0) {
+        results.push('');
+        return results;
+    }
+    results = str.split(/\n/);
+    var noBom = false;
+    if (opt.noBOM === true) {
+        noBom = true;
+    }
+    if (noBom === true && results.length > 0) {
+        var strFirst = results[0];
+        if (strFirst.length > 0) {
+            var cp = Number(strFirst.codePointAt(0));
+            if (isBom(cp) === true) {
+                strFirst = strFirst.substr(1);
+                results[0] = strFirst;
+            }
+        }
+    }
+    return results;
 };
 var breakStrByCodePoint = function (str, opt) {
     var maxWidth = Math.round(Number(opt.width)); 
@@ -148,6 +181,12 @@ var removeLnBr = function (str) {
         return '';
     }
     return str.replace(/(\r\n|\n|\r)/gm, '');
+};
+var cleanLnBr = function (str) {
+    if (str.length === 0) {
+        return '';
+    }
+    return str.replace(/(\r\n|\n|\r)/gm, '\n');
 };
 var removeExSp = function (str) {
     if (str.length === 0) {

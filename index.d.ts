@@ -7,7 +7,9 @@ export declare enum lnEndOpt {
     /** Remove Line Break */
     noLnBr = 1,
     /** Encode line breaks as \\n */
-    encode = 2
+    encode = 2,
+    /** Width options will be ignored and lines will be split by eol */
+    splitByEol = 3
 }
 /**
  * Flags for Width output options

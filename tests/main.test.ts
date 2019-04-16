@@ -192,10 +192,44 @@ describe('String Breaker test', () => {
     }).to.throw(RangeError);
     done();
   });
-  it.only('should throw a range error with width is less than one', (done) => {
+  it('should throw a range error with width is less than one', (done) => {
     expect(() => {
       stringBreaker('abc', 0);
     }).to.throw(RangeError);
+    done();
+  });
+  it('should break a string with BOM by eol and remove the BOM', (done) => {
+    // include BOM and \n \r varations
+    const strSrc = '\ufeff' + 'Happy cat.\nThe quick brown fox jumped over the lazy dog.\r\nThe moon is full tonight.\rI like full moons!';
+    const result = stringBreaker(strSrc, {
+      width: 10, // width will be ignored due to splitByEol
+      lnEnd: lnEndOpt.splitByEol
+    });
+    expect(result[0].length).equal(10); // BOM has been removed
+    expect(result.length).equal(4);
+    done();
+  });
+  it('should break a string with only a BOM by eol and remove the BOM', (done) => {
+    const strSrc = '\ufeff'; // Byte order mark
+    const result = stringBreaker(strSrc, {
+      lnEnd: lnEndOpt.splitByEol
+    });
+    expect(result.length).equal(1);
+    expect(result[0].length).equal(0); // BOM has been removed
+    done();
+  });
+  /**
+   * Test to check and see that breaking an empty string by end of line
+   * results in a string array with a length of 1 and the one element has
+   * a string length of 0.
+   */
+  it('should break a empty string by eol', (done) => {
+    const strSrc = '';
+    const result = stringBreaker(strSrc, {
+      lnEnd: lnEndOpt.splitByEol,
+    });
+    expect(result.length).equal(1);
+    expect(result[0].length).equal(0);
     done();
   });
 });

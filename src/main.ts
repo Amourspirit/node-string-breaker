@@ -9,7 +9,9 @@ export enum lnEndOpt {
   /** Remove Line Break */
   noLnBr,
   /** Encode line breaks as \\n */
-  encode
+  encode,
+  /** Width options will be ignored and lines will be split by eol */
+  splitByEol
 }
 
 /**
@@ -28,10 +30,12 @@ export enum widthFlags {
   none =  0,
   /**
    * Fullwidth chars will count for two positions
+   * @see {@link https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms}
    */
   fullwidth = 1 << 0,
   /**
    * Surrogae Pairs will count for two positions
+   * @see {@link https://en.wikipedia.org/wiki/UTF-16}
    */
   surrogatePair = 1 << 1
 }
@@ -92,29 +96,64 @@ export enum widthFlags {
  * @param str The string to break into string array
  * @param opt parameters to affect the output.  
  * Can be number or {@link IStringBreakOpt}  
- * If a number is passed in it becomes the width for the output.
- *
+ * If a number is passed in it becomes the width for the output.  
+ * If no parameter is passed then output will be broken into string array
+ * with 80 characters per element.
+ * 
+ ```typescript
+let x: string[];
+x = stringBreaker('some long text');
+// is the same as
+x = stringBreaker('some long text', 80),
+// is the same as
+x = stringBreaker('some long text' {width: 80});
+ ```
+ * 
  * Example:
+ ```typescript
+ *
+ * import { stringBreaker } from 'string-breaker';
+ *
+ * let x = stringBreaker('The quick brown fox jumped over the lazy dog', 5);
+ * // x => ['The q','uick ','brown',' fox ','jumpe','d ove','r the',' lazy',' dog']
+ * 
+ * x = stringBreaker('Hello World\nNice 😇\nhmm... ', 5);
+ * // x => ['Hello', ' Worl', 'dNice', ' 😇hmm', '... ']
+ * 
+ * x = stringBreaker('\uD83D\uDE07Hello World\nNice 😇\nhmm...', 6);
+ * // x => ['😇Hello', ' World', 'Nice 😇', 'hmm...']
+ * 
+ * x = stringBreaker('\uD83D\uDE07Hello World\nNice 😇\r\nhmm...', {
+ *     width: 6,
+ *     lnEnd: lnEndOpt.encode
+ *     });
+ * // x => ['😇Hello', ' World', '\\nNice', ' 😇\\nhm', 'm...']
+ ```
+ *
+ * Split by End of Line  
+ * stringBreaker can split by eol by setting option lnEnd: lnEndOpt.splitByEol
+ * 
+ * Example Splitting by End of Line:
 ```typescript
 import { stringBreaker } from 'string-breaker';
 
-let x = stringBreaker('The quick brown fox jumped over the lazy dog', 5);
-// x => ['The q','uick ','brown',' fox ','jumpe','d ove','r the',' lazy',' dog']
+// mixing \n and \r will result in the same output
+let strSrc = 'Happy cat.'
+strSrc += '\nThe quick brown fox jumped over the lazy dog.';
+strSrc += '\r\nThe moon is full tonight.\rI like full moons!';
 
-x = stringBreaker('Hello World\nNice 😇\nhmm... ', 5);
-// x => ['Hello', ' Worl', 'dNice', ' 😇hmm', '... ']
-
-x = stringBreaker('\uD83D\uDE07Hello World\nNice 😇\nhmm...', 6);
-// x => ['😇Hello', ' World', 'Nice 😇', 'hmm...']
-
-x = stringBreaker('\uD83D\uDE07Hello World\nNice 😇\r\nhmm...', {
-    width: 6,
-    lnEnd: lnEndOpt.encode
-    });
-// x => ['😇Hello', ' World', '\\nNice', ' 😇\\nhm', 'm...']
+const x = stringBreaker(strSrc, { lnEnd: lnEndOpt.splitByEol });
+// x => [
+//  'Happy cat.',
+//  'The quick brown fox jumped over the lazy dog.',
+//  'The moon is full tonight.',
+//  'I like full moons!' ]
 ```
  */
 export const stringBreaker = (str: string, opt?: IStringBreakOpt | number): string[] => {
+  if (typeof str !== 'string') {
+    throw new TypeError('stringBreaker: str parmeter must be of type string');
+  }
   const options: IStringBreakOpt = getOptions({
     width: 80,
     lnEnd: lnEndOpt.noLnBr,
@@ -129,15 +168,18 @@ export const stringBreaker = (str: string, opt?: IStringBreakOpt | number): stri
     case lnEndOpt.noLnBr:
       str = removeLnBr(str);
       break
+    case lnEndOpt.splitByEol:
+      str = cleanLnBr(str);
+      break;
     default:
       break;
   }
   if (options.noExSp === true) {
     str = removeExSp(str);
   }
-  /* if (options.byCodePoint === false) {
-    return breakStr(str, options);  
-  } */
+  if (options.lnEnd === lnEndOpt.splitByEol) {
+    return breakStrByEol(str, options);
+  }
   return breakStrByCodePoint(str, options);
 }
 // #endregion
@@ -177,6 +219,31 @@ const getOptions = (defaultOptions: IStringBreakOpt, options?: IStringBreakOpt |
   }
   return options;
 }
+const breakStrByEol = (str: string, opt: IStringBreakOpt): string[] => {
+  // eol has allready been cleaned at this point
+  // all eol are \n
+  let results: string[] = []
+  if (str.length === 0) {
+    results.push('');
+    return results;
+  }
+  results = str.split(/\n/);
+  let noBom: boolean = false;
+  if (opt.noBOM === true) {
+    noBom = true;
+  }
+  if (noBom === true && results.length > 0) {
+    let strFirst = results[0];
+    if (strFirst.length > 0) {
+      const cp: number = Number(strFirst.codePointAt(0));
+      if (isBom(cp) === true) {
+        strFirst = strFirst.substr(1);
+        results[0] = strFirst;
+      }
+    }
+  }
+  return results;
+}
 /**
  * @hidden
  */
@@ -190,6 +257,7 @@ const breakStrByCodePoint = (str: string, opt: IStringBreakOpt): string[] => {
   let noBom: boolean = false;
   let respectWidth: boolean = false;
   let respectSurrogagePair = false;
+  
   if (opt.lenOpt !== undefined) {
     // enums can be assigned any arbitrary number
     const fullMask = 3; // widthFlags.fullwidth | widthFlags.surrogatePair
@@ -265,6 +333,14 @@ const removeLnBr = (str: string): string => {
   // This replaces all instance of the \r\n then replaces all \n then finally
   // replaces all \r. It goes through and removes all types of line breaks
   return str.replace(/(\r\n|\n|\r)/gm, '');
+}
+const cleanLnBr = (str: string): string => {
+  if (str.length === 0) {
+    return '';
+  }
+  // This replaces all instance of the \r\n then replaces all \r.
+  // It goes through and replaces all line breaks that are not strictly \n
+  return str.replace(/(\r\n|\r)/gm, '\n');
 }
 /**
  * @hidden
