@@ -1,0 +1,271 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>string-breaker</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">string-breaker</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> string-breaker</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<p align="center">
+					«-(¯`v´¯)-« <a href="https://www.npmjs.com/package/string-breaker">【🇸​🇹​🇷​🇮​🇳​🇬​-🇧​🇷​🇪​🇦​🇰​🇪​🇷​​】</a> »-(¯`v´¯)-»
+					</ br>
+				</p>
+				<p align="center">
+					<a href="https://travis-ci.org/Amourspirit/node-string-breaker"><img src="https://travis-ci.org/Amourspirit/node-string-breaker.svg?branch=master" /></a>
+					<a href="https://snyk.io/test/github/Amourspirit/node-string-breaker?targetFile=package.json"><img src="https://snyk.io/test/github/Amourspirit/node-string-breaker/badge.svg?targetFile=package.json" /></a> <img src="https://img.shields.io/github/package-json/v/Amourspirit/node-string-breaker.svg" />
+					<img src="https://img.shields.io/github/license/Amourspirit/node-string-breaker.svg" /><a href="https://github.com/badges/stability-badges"> <img src="https://badges.github.io/stability-badges/dist/experimental.svg" /></a>
+				</p>
+				<h1 id="string-breaker">string-breaker</h1>
+				<h2 id="break-string-into-array-of-uniform-lines">Break string into array of uniform lines</h2>
+				<h3 id="usage">Usage</h3>
+				<pre><code class="language-ts"><span class="hljs-keyword">import</span> { stringBreaker } <span class="hljs-keyword">from</span> <span class="hljs-string">'string-breaker'</span>;
+
+<span class="hljs-keyword">let</span> x = stringBreaker(<span class="hljs-string">'The quick brown fox jumped over the lazy dog'</span>, <span class="hljs-number">5</span>);
+<span class="hljs-comment">// x =&gt; ['The q','uick ','brown',' fox ','jumpe','d ove','r the',' lazy',' dog']</span>
+
+x = stringBreaker(<span class="hljs-string">'Hello World\nNice 😇\nhmm... '</span>, <span class="hljs-number">5</span>);
+<span class="hljs-comment">// x =&gt; ['Hello', ' Worl', 'dNice', ' 😇hmm', '... ']</span>
+
+x = stringBreaker(<span class="hljs-string">'\uD83D\uDE07Hello World\nNice 😇\nhmm...'</span>, <span class="hljs-number">6</span>);
+<span class="hljs-comment">// x =&gt; ['😇Hello', ' World', 'Nice 😇', 'hmm...']</span>
+
+x = stringBreaker(<span class="hljs-string">'\uD83D\uDE07Hello World\nNice 😇\r\nhmm...'</span>, {
+    width: <span class="hljs-number">6</span>,
+    lnEnd: lnEndOpt.encode
+    });
+<span class="hljs-comment">// x =&gt; ['😇Hello', ' World', '\\nNice', ' 😇\\nhm', 'm...']</span>
+
+<span class="hljs-built_in">console</span>.log(x.join(<span class="hljs-string">'\n'</span>));
+<span class="hljs-comment">// 😇Hello</span>
+<span class="hljs-comment">// World</span>
+<span class="hljs-comment">// \nNice</span>
+<span class="hljs-comment">// 😇\nhm</span>
+<span class="hljs-comment">// m...</span>
+
+x = stringBreaker(<span class="hljs-string">'\uD83D\uDE07Hello World\nNice 😇\nhmm...'</span>, {
+    width: <span class="hljs-number">6</span>,
+    lnEnd: lnEndOpt.none
+    });
+<span class="hljs-comment">// x =&gt; [ '😇Hello', ' World', '\nNice ', '😇\nhmm.', '..' ]</span>
+<span class="hljs-built_in">console</span>.log(x.join(<span class="hljs-string">'\n'</span>));
+<span class="hljs-comment">// 😇Hello</span>
+<span class="hljs-comment">// World</span>
+<span class="hljs-comment">//</span>
+<span class="hljs-comment">// Nice </span>
+<span class="hljs-comment">// 😇</span>
+<span class="hljs-comment">// hmm.</span>
+<span class="hljs-comment">// ..</span>
+
+<span class="hljs-comment">// replace all extra space with a single space</span>
+x = stringBreaker(<span class="hljs-string">'\uD83D\uDE07    Hello     World\nNice    😇 \r\nhmm...'</span>, {
+    width: <span class="hljs-number">5</span>,
+    noExSp: <span class="hljs-literal">true</span>
+    });
+<span class="hljs-comment">// x =&gt; ['😇 Hel', 'lo Wo', 'rldNi', 'ce 😇h', 'mm...']</span></code></pre>
+				<p><strong>stringBreaker</strong> by default will use code points to build output; however, this can be switched to character length by setting <strong>lenOpt</strong> of stringBreaker options.</p>
+				<p>With options is set to fullwitdh the output is built based upon if the code point for each char that is <a href="https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms">fullwidth</a> will take two positions.</p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { stringBreaker } <span class="hljs-keyword">from</span> <span class="hljs-string">'string-breaker'</span>;
+
+<span class="hljs-keyword">let</span> str = <span class="hljs-string">'!可以看到他的棕色腹部'</span>;
+<span class="hljs-keyword">let</span> x = stringBreaker(str, <span class="hljs-number">6</span>);
+<span class="hljs-comment">// x =&gt; [ '!可以看到他', '的棕色腹部' ]</span>
+
+x = stringBreaker(str , {
+  width: <span class="hljs-number">6</span>,
+  lenOpt: widthFlags.fullwidth
+});
+<span class="hljs-comment">// all but the first char is a fullwidth</span>
+<span class="hljs-comment">// x =&gt; [</span>
+<span class="hljs-comment">//      '!可以看', // \u21 \u53EF \u4EE5 \u770B</span>
+<span class="hljs-comment">//      '到他的',  // \u5230 \u4ED6 \u7684</span>
+<span class="hljs-comment">//      '棕色腹',  // \u68D5 \u8272 \u8179</span>
+<span class="hljs-comment">//      '部'      // \u90E8</span>
+<span class="hljs-comment">//      ]</span>
+</code></pre>
+				<p>With options is set to surrogatePair the output is built based upon if the code point for each char that is <strong>surrogate pair</strong> will take two positions.</p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { stringBreaker } <span class="hljs-keyword">from</span> <span class="hljs-string">'string-breaker'</span>;
+
+<span class="hljs-keyword">let</span> str = <span class="hljs-string">'🧀😊😀😃😄😁'</span>;
+<span class="hljs-built_in">console</span>.log(str.length); <span class="hljs-comment">// 12 all surrogate pairs</span>
+
+<span class="hljs-keyword">let</span> x = stringBreaker(str, <span class="hljs-number">3</span>);
+<span class="hljs-comment">// x =&gt; [ '🧀😊😀', '😃😄😁' ]</span>
+
+x = stringBreaker(str , {
+  width: <span class="hljs-number">5</span>,
+  lenOpt: widthFlags.surrogatePair
+});
+<span class="hljs-comment">// all the characters are surrogate pair</span>
+<span class="hljs-comment">// because widthFlags.surrogatePair is set the output</span>
+<span class="hljs-comment">// string array returns 6 not 5 due to surrogate pairs not breakable.</span>
+<span class="hljs-comment">// x =&gt; [</span>
+<span class="hljs-comment">//               { surrogate } | { surrogate } | { surrogate }</span>
+<span class="hljs-comment">//  '🧀😊😀', //  \uD83E \uDDC0 | \uD83D \uDE0A | \uD83D \uDE00</span>
+<span class="hljs-comment">//  '😃😄😁'  //  \uD83D \uDE03 | \uD83D \uDE04 | \uD83D \uDE01</span>
+<span class="hljs-comment">//  ]</span>
+</code></pre>
+				<p>widthFlags can be set to combine options</p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { stringBreaker } <span class="hljs-keyword">from</span> <span class="hljs-string">'string-breaker'</span>;
+
+<span class="hljs-keyword">let</span> str = <span class="hljs-string">'🧀😊😀棕腹部!!'</span>;
+<span class="hljs-built_in">console</span>.log(str.length); <span class="hljs-comment">// 11 mix of surrogate pair, halfwidth and fullwidth</span>
+
+<span class="hljs-keyword">let</span> x = stringBreaker(str, <span class="hljs-number">4</span>);
+<span class="hljs-comment">// x =&gt; [ '🧀😊😀棕', '腹部!!' ]</span>
+
+x = stringBreaker(str , {
+  width: <span class="hljs-number">4</span>,
+  lenOpt: widthFlags.fullwidth | widthFlags.surrogatePair
+});
+<span class="hljs-comment">// mix of surrogate pair, fullwidth and halfwidth</span>
+<span class="hljs-comment">// x =&gt; [</span>
+<span class="hljs-comment">// '🧀😊', // \uD83E \uDDC0 \uD83D \uDE0A two surrogate</span>
+<span class="hljs-comment">// '😀棕', // \uD83D \uDE00 \u68D5 one surrogate and one fullwidth</span>
+<span class="hljs-comment">// '腹部', // \u8179 \u90E8 two fullwidth</span>
+<span class="hljs-comment">// '!!'  // \u21 \u21 two halfwidth</span>
+<span class="hljs-comment">// ]</span></code></pre>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_main_.html">"main"</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
