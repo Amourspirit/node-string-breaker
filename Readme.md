@@ -12,7 +12,9 @@
 
 ## Break string into array of uniform lines
 
-See [Documentation](https://amourspirit.github.io/node-string-breaker/index.html)
+## Documentation
+
+For more information view the [Documentation](https://amourspirit.github.io/node-string-breaker/index.html)
 
 ### Install
 
