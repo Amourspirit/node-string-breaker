@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>widthFlags | string-breaker</title>
+	<title>splitByOpt | string-breaker</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -59,10 +59,10 @@
 					<a href="../modules/_main_.html">&quot;main&quot;</a>
 				</li>
 				<li>
-					<a href="_main_.widthflags.html">widthFlags</a>
+					<a href="_main_.splitbyopt.html">splitByOpt</a>
 				</li>
 			</ul>
-			<h1>Enumeration widthFlags</h1>
+			<h1>Enumeration splitByOpt</h1>
 		</div>
 	</div>
 </header>
@@ -72,17 +72,8 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Flags for Width output options</p>
+						<p>Split string kind</p>
 					</div>
-					<dl class="tsd-comment-tags">
-						<dt>example</dt>
-						<dd><pre><code class="language-typescript">
-<span class="hljs-keyword">let</span> wFlags = widthFlags.fullwidth | widthFlags.surrogatePair;</code></pre>
-						</dd>
-						<dt>see</dt>
-						<dd><p><a href="../interfaces/_main_.istringbreakopt.html">IStringBreakOpt</a></p>
-						</dd>
-					</dl>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -92,9 +83,9 @@
 						<section class="tsd-index-section ">
 							<h3>Enumeration members</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="_main_.widthflags.html#fullwidth" class="tsd-kind-icon">fullwidth</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="_main_.widthflags.html#none" class="tsd-kind-icon">none</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="_main_.widthflags.html#surrogatepair" class="tsd-kind-icon">surrogate<wbr>Pair</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="_main_.splitbyopt.html#line" class="tsd-kind-icon">line</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="_main_.splitbyopt.html#width" class="tsd-kind-icon">width</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="_main_.splitbyopt.html#word" class="tsd-kind-icon">word</a></li>
 							</ul>
 						</section>
 					</div>
@@ -103,58 +94,49 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Enumeration members</h2>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="fullwidth" class="tsd-anchor"></a>
-					<h3>fullwidth</h3>
-					<div class="tsd-signature tsd-kind-icon">fullwidth<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;1 &lt;&lt; 0</span></div>
+					<a name="line" class="tsd-anchor"></a>
+					<h3>line</h3>
+					<div class="tsd-signature tsd-kind-icon">line<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Amourspirit/node-string-breaker/blob/77d6e98/src/main.ts#L50">main.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/Amourspirit/node-string-breaker/blob/77d6e98/src/main.ts#L15">main.ts:15</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Fullwidth chars will count for two positions</p>
-						</div>
-						<dl class="tsd-comment-tags">
-							<dt>see</dt>
-							<dd><p><a href="https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms" class="external">https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms</a></p>
-							</dd>
-						</dl>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="none" class="tsd-anchor"></a>
-					<h3>none</h3>
-					<div class="tsd-signature tsd-kind-icon">none<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;0</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/Amourspirit/node-string-breaker/blob/77d6e98/src/main.ts#L45">main.ts:45</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>No options will be applied</p>
+							<p>Split by line</p>
 						</div>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="surrogatepair" class="tsd-anchor"></a>
-					<h3>surrogate<wbr>Pair</h3>
-					<div class="tsd-signature tsd-kind-icon">surrogate<wbr>Pair<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;1 &lt;&lt; 1</span></div>
+					<a name="width" class="tsd-anchor"></a>
+					<h3>width</h3>
+					<div class="tsd-signature tsd-kind-icon">width<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Amourspirit/node-string-breaker/blob/77d6e98/src/main.ts#L55">main.ts:55</a></li>
+							<li>Defined in <a href="https://github.com/Amourspirit/node-string-breaker/blob/77d6e98/src/main.ts#L8">main.ts:8</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Surrogae Pairs will count for two positions</p>
+							<p>Split by Width</p>
 						</div>
-						<dl class="tsd-comment-tags">
-							<dt>see</dt>
-							<dd><p><a href="https://en.wikipedia.org/wiki/UTF-16" class="external">https://en.wikipedia.org/wiki/UTF-16</a></p>
-							</dd>
-						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="word" class="tsd-anchor"></a>
+					<h3>word</h3>
+					<div class="tsd-signature tsd-kind-icon">word<span class="tsd-signature-symbol">:</span> </div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Amourspirit/node-string-breaker/blob/77d6e98/src/main.ts#L13">main.ts:13</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Split by word
+							Defult</p>
+						</div>
 					</div>
 				</section>
 			</section>
@@ -175,27 +157,27 @@
 					<li class=" tsd-kind-enum tsd-parent-kind-external-module">
 						<a href="_main_.lnendopt.html" class="tsd-kind-icon">ln<wbr>End<wbr>Opt</a>
 					</li>
-					<li class=" tsd-kind-enum tsd-parent-kind-external-module">
-						<a href="_main_.splitbyopt.html" class="tsd-kind-icon">split<wbr>ByOpt</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-enum tsd-parent-kind-external-module">
-						<a href="_main_.widthflags.html" class="tsd-kind-icon">width<wbr>Flags</a>
+						<a href="_main_.splitbyopt.html" class="tsd-kind-icon">split<wbr>ByOpt</a>
 						<ul>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="_main_.widthflags.html#fullwidth" class="tsd-kind-icon">fullwidth</a>
+								<a href="_main_.splitbyopt.html#line" class="tsd-kind-icon">line</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="_main_.widthflags.html#none" class="tsd-kind-icon">none</a>
+								<a href="_main_.splitbyopt.html#width" class="tsd-kind-icon">width</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="_main_.widthflags.html#surrogatepair" class="tsd-kind-icon">surrogate<wbr>Pair</a>
+								<a href="_main_.splitbyopt.html#word" class="tsd-kind-icon">word</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-enum tsd-parent-kind-external-module">
+						<a href="_main_.widthflags.html" class="tsd-kind-icon">width<wbr>Flags</a>
+					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
 						<a href="../interfaces/_main_.istringbreakopt.html" class="tsd-kind-icon">IString<wbr>Break<wbr>Opt</a>
 					</li>

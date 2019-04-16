@@ -70,11 +70,24 @@
 				</p>
 				<p align="center">
 					<a href="https://travis-ci.org/Amourspirit/node-string-breaker"><img src="https://travis-ci.org/Amourspirit/node-string-breaker.svg?branch=master" /></a>
-					<a href="https://snyk.io/test/github/Amourspirit/node-string-breaker?targetFile=package.json"><img src="https://snyk.io/test/github/Amourspirit/node-string-breaker/badge.svg?targetFile=package.json" /></a> <img src="https://img.shields.io/github/package-json/v/Amourspirit/node-string-breaker.svg" />
-					<img src="https://img.shields.io/github/license/Amourspirit/node-string-breaker.svg" /><a href="https://github.com/badges/stability-badges"> <img src="https://badges.github.io/stability-badges/dist/experimental.svg" /></a>
+					<a href="https://snyk.io/test/github/Amourspirit/node-string-breaker?targetFile=package.json">
+					<img src="https://snyk.io/test/github/Amourspirit/node-string-breaker/badge.svg?targetFile=package.json" /></a>
+					<a href="https://www.npmjs.com/package/string-breaker"><img alt="node" src="https://img.shields.io/node/v/string-breaker.svg"></a>
+					<img src="https://img.shields.io/github/package-json/v/Amourspirit/node-string-breaker.svg" />
+					<img src="https://img.shields.io/github/license/Amourspirit/node-string-breaker.svg" />
+					<a href="https://github.com/badges/stability-badges"> <img src="https://badges.github.io/stability-badges/dist/stable.svg" /></a>
 				</p>
 				<h1 id="string-breaker">string-breaker</h1>
-				<h2 id="break-string-into-array-of-uniform-lines">Break string into array of uniform lines</h2>
+				<h2 id="break-string-into-array">Break string into array</h2>
+				<ul>
+					<li>string array with elements that are a specific width</li>
+					<li>string array with elements for each line</li>
+					<li>string array with element fo reach word</li>
+				</ul>
+				<h2 id="documentation">Documentation</h2>
+				<p>For more information view the <a href="https://amourspirit.github.io/node-string-breaker/index.html">Documentation</a></p>
+				<h3 id="install">Install</h3>
+				<pre><code class="language-bash">npm install --save string-breaker</code></pre>
 				<h3 id="usage">Usage</h3>
 				<pre><code class="language-ts"><span class="hljs-keyword">import</span> { stringBreaker } <span class="hljs-keyword">from</span> <span class="hljs-string">'string-breaker'</span>;
 
@@ -120,8 +133,36 @@ x = stringBreaker(<span class="hljs-string">'\uD83D\uDE07    Hello     World\nNi
     noExSp: <span class="hljs-literal">true</span>
     });
 <span class="hljs-comment">// x =&gt; ['😇 Hel', 'lo Wo', 'rldNi', 'ce 😇h', 'mm...']</span></code></pre>
-				<p><strong>stringBreaker</strong> by default will use code points to build output; however, this can be switched to character length by setting <strong>lenOpt</strong> of stringBreaker options.</p>
-				<p>With options is set to fullwitdh the output is built based upon if the code point for each char that is <a href="https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms">fullwidth</a> will take two positions.</p>
+				<p>Split by End of Line<br><strong>stringBreaker</strong> can split by eol by setting option <em>splitOpt: splitByOpt.line</em></p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { stringBreaker } <span class="hljs-keyword">from</span> <span class="hljs-string">'string-breaker'</span>;
+
+<span class="hljs-comment">// mixing \n and \r will result in the same output</span>
+<span class="hljs-keyword">let</span> strSrc = <span class="hljs-string">'Happy cat.'</span>;
+strSrc += <span class="hljs-string">'\nThe quick brown fox jumped over the lazy dog.'</span>;
+strSrc += <span class="hljs-string">'\r\nThe moon is full tonight.\rI like full moons!'</span>;
+
+<span class="hljs-keyword">const</span> x = stringBreaker(strSrc, { splitOpt: splitByOpt.line });
+<span class="hljs-comment">// x =&gt; [</span>
+<span class="hljs-comment">//  'Happy cat.',</span>
+<span class="hljs-comment">//  'The quick brown fox jumped over the lazy dog.',</span>
+<span class="hljs-comment">//  'The moon is full tonight.',</span>
+<span class="hljs-comment">//  'I like full moons!' ]</span></code></pre>
+				<p>Split by Words
+				<strong>stringBreaker</strong> can split into words by setting option <em>splitOpt: splitByOpt.word</em></p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { stringBreaker } <span class="hljs-keyword">from</span> <span class="hljs-string">'string-breaker'</span>;
+
+<span class="hljs-comment">// mixing \n and \r will result in the same output</span>
+<span class="hljs-keyword">let</span> strSrc = <span class="hljs-string">'Happy cat.'</span>;
+strSrc += <span class="hljs-string">'\nThe quick   brown\t\t fox jumped over the lazy dog.'</span>;
+strSrc += <span class="hljs-string">'\r\nThe moon is full tonight.\rI like full moons!'</span>;
+
+<span class="hljs-keyword">const</span> x = stringBreaker(strSrc, { splitOpt: splitByOpt.word });
+<span class="hljs-comment">// x =&gt; [ 'Happy','cat.','The','quick','brown','fox','jumped',</span>
+<span class="hljs-comment">//        'over','the','lazy','dog.','The','moon','is','full',</span>
+<span class="hljs-comment">//        'tonight.','I','like','full','moons!' ]</span>
+</code></pre>
+				<p><strong>stringBreaker</strong> by default will use code points to build output; however, this can be switched to character length by setting <a href="https://amourspirit.github.io/node-string-breaker/enums/_main_.lnendopt.html">lenOpt</a> of <a href="https://amourspirit.github.io/node-string-breaker/modules/_main_.html#stringbreaker">stringBreaker</a> <a href="https://amourspirit.github.io/node-string-breaker/interfaces/_main_.istringbreakopt.html">options</a>.</p>
+				<p>With options is set to <a href="https://amourspirit.github.io/node-string-breaker/enums/_main_.widthflags.html#fullwidth">fullwitdh</a> the output is built based upon if the code point for each char that is <a href="https://amourspirit.github.io/node-string-breaker/enums/_main_.widthflags.html#fullwidth">fullwidth</a> will take two positions.</p>
 				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { stringBreaker } <span class="hljs-keyword">from</span> <span class="hljs-string">'string-breaker'</span>;
 
 <span class="hljs-keyword">let</span> str = <span class="hljs-string">'!可以看到他的棕色腹部'</span>;
@@ -140,7 +181,7 @@ x = stringBreaker(str , {
 <span class="hljs-comment">//      '部'      // \u90E8</span>
 <span class="hljs-comment">//      ]</span>
 </code></pre>
-				<p>With options is set to surrogatePair the output is built based upon if the code point for each char that is <strong>surrogate pair</strong> will take two positions.</p>
+				<p>With <a href="https://amourspirit.github.io/node-string-breaker/interfaces/_main_.istringbreakopt.html">options</a> is set to <a href="https://amourspirit.github.io/node-string-breaker/enums/_main_.widthflags.html#surrogatepair">surrogatePair</a> the output is built based upon if the code point for each char that is <strong>surrogate pair</strong> will take two positions.</p>
 				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { stringBreaker } <span class="hljs-keyword">from</span> <span class="hljs-string">'string-breaker'</span>;
 
 <span class="hljs-keyword">let</span> str = <span class="hljs-string">'🧀😊😀😃😄😁'</span>;
@@ -162,7 +203,7 @@ x = stringBreaker(str , {
 <span class="hljs-comment">//  '😃😄😁'  //  \uD83D \uDE03 | \uD83D \uDE04 | \uD83D \uDE01</span>
 <span class="hljs-comment">//  ]</span>
 </code></pre>
-				<p>widthFlags can be set to combine options</p>
+				<p><a href="https://amourspirit.github.io/node-string-breaker/enums/_main_.widthflags.html">widthFlags</a> can be set to combine options</p>
 				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { stringBreaker } <span class="hljs-keyword">from</span> <span class="hljs-string">'string-breaker'</span>;
 
 <span class="hljs-keyword">let</span> str = <span class="hljs-string">'🧀😊😀棕腹部!!'</span>;
