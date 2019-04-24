@@ -86,6 +86,8 @@
 				</ul>
 				<h2 id="documentation">Documentation</h2>
 				<p>For more information view the <a href="https://amourspirit.github.io/node-string-breaker/index.html">Documentation</a></p>
+				<h2 id="repository">Repository</h2>
+				<p>View the source code on <a href="https://github.com/Amourspirit/node-string-breaker">github</a></p>
 				<h3 id="install">Install</h3>
 				<pre><code class="language-bash">npm install --save string-breaker</code></pre>
 				<h3 id="usage">Usage</h3>
@@ -223,6 +225,17 @@ x = stringBreaker(str , {
 <span class="hljs-comment">// '腹部', // \u8179 \u90E8 two fullwidth</span>
 <span class="hljs-comment">// '!!'  // \u21 \u21 two halfwidth</span>
 <span class="hljs-comment">// ]</span></code></pre>
+				<p>Example split by width and preserve words</p>
+				<p>When split using <a href="https://amourspirit.github.io/node-string-breaker/interfaces/main_.istringbreakopt.html#width">width</a> and flag <a href="https://amourspirit.github.io/ode-string-breaker/enums/_main_.widthflags.html#nearestword">widthFlags.nearestWord</a> the elements in the array
+				will split where there is a whitespace and not before.</p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { stringBreaker } <span class="hljs-keyword">from</span> <span class="hljs-string">'string-breaker'</span>;
+
+<span class="hljs-keyword">var</span> str = <span class="hljs-string">'On this day. For this morning, when Gregor\u3000Samsa woke from troubled dreams; he found himself transformed.'</span>;
+<span class="hljs-keyword">const</span> result: <span class="hljs-built_in">string</span>[] = stringBreaker(str, { width: <span class="hljs-number">10</span>, lenOpt: widthFlags.nearestWord });
+<span class="hljs-keyword">const</span> strResult = result.join(<span class="hljs-string">'\n'</span>);
+<span class="hljs-built_in">console</span>.log(strResult);</code></pre>
+				<p>On this day.
+				For this morning,<br>when Gregor<br>Samsa woke<br>from troubled<br>dreams; he<br>found himself<br>transformed.  </p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">

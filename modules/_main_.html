@@ -105,7 +105,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Amourspirit/node-string-breaker/blob/d3928f3/src/main.ts#L245">main.ts:245</a></li>
+									<li>Defined in <a href="https://github.com/Amourspirit/node-string-breaker/blob/c583f58/src/main.ts#L298">main.ts:298</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -185,6 +185,29 @@ strSrc += <span class="hljs-string">'\r\nThe moon is full tonight.\rI like full 
 <span class="hljs-comment">//        'over','the','lazy','dog.','The','moon','is','full',</span>
 <span class="hljs-comment">//        'tonight.','I','like','full','moons!' ]</span>
 </code></pre>
+											<p>Example split by width and preserve words</p>
+											<div>&nbsp;</div>
+											When split using <a href="../interfaces/_main_.istringbreakopt.html#width">width</a> and flag <a href="../enums/_main_.widthflags.html#nearestword">widthFlags.nearestWord</a> the elements in the array
+											will split where there is a whitespace and not before. If the whitespace is
+											a printing char as in the case of \u1680 then it will be include at the end of the element:
+											Otherwise the whitespace is removed from the end of the element;
+											<div>&nbsp;</div>
+											Elemnets will not start with a whitespace unless that whitespace happens to be a printalbe whitespace
+											such as \u1680. For practical purposes all lines will not start with a whitespace.
+											<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { stringBreaker } <span class="hljs-keyword">from</span> <span class="hljs-string">'string-breaker'</span>;
+
+<span class="hljs-keyword">var</span> str = <span class="hljs-string">'On this\u1680day.\u1680For this morning, when Gregor\u3000Samsa woke from troubled dreams; he found himself transformed.'</span>;
+<span class="hljs-keyword">const</span> result: <span class="hljs-built_in">string</span>[] = stringBreaker(str, { width: <span class="hljs-number">10</span>, lenOpt: widthFlags.nearestWord });
+<span class="hljs-keyword">const</span> strResult = result.join(<span class="hljs-string">'\n'</span>);
+<span class="hljs-built_in">console</span>.log(strResult);</code></pre>
+											<div>On this day.&#5760;</div>
+											<div>For this morning,</div>
+											<div>when Gregor</div>
+											<div>Samsa woke</div>
+											<div>from troubled</div>
+											<div>dreams; he</div>
+											<div>found himself</div>
+											<div>transformed.</div>
 										</div>
 									</div>
 								</li>

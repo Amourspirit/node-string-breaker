@@ -93,6 +93,7 @@
 							<h3>Enumeration members</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="_main_.widthflags.html#fullwidth" class="tsd-kind-icon">fullwidth</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="_main_.widthflags.html#nearestword" class="tsd-kind-icon">nearest<wbr>Word</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="_main_.widthflags.html#none" class="tsd-kind-icon">none</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="_main_.widthflags.html#surrogatepair" class="tsd-kind-icon">surrogate<wbr>Pair</a></li>
 							</ul>
@@ -108,7 +109,7 @@
 					<div class="tsd-signature tsd-kind-icon">fullwidth<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;1 &lt;&lt; 0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Amourspirit/node-string-breaker/blob/d3928f3/src/main.ts#L50">main.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/Amourspirit/node-string-breaker/blob/c583f58/src/main.ts#L50">main.ts:50</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -123,12 +124,50 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="nearestword" class="tsd-anchor"></a>
+					<h3>nearest<wbr>Word</h3>
+					<div class="tsd-signature tsd-kind-icon">nearest<wbr>Word<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;1 &lt;&lt; 2</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Amourspirit/node-string-breaker/blob/c583f58/src/main.ts#L81">main.ts:81</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>When split using <a href="../interfaces/_main_.istringbreakopt.html#width">width</a> and this flag is set then the elements in the array
+								will split where there is a whitespace and not before. If the whitespace is
+								a printing char as in the case of \u1680 then it will be include at the end of the element:
+							Otherwise the whitespace is removed from the end of the element;</p>
+							<div>&nbsp;</div>
+							Elemnets will not start with a whitespace unless that whitespace happens to be a printalbe whitespace
+							such as \u1680. For practical purposes all lines will not start with a whitespace.
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>example</dt>
+							<dd><pre><code class="language-typescript">
+<span class="hljs-keyword">var</span> str = <span class="hljs-string">'On this\u1680day.\u1680For this morning, when Gregor\u3000Samsa woke from troubled dreams; he found himself transformed.'</span>;
+<span class="hljs-keyword">const</span> result: <span class="hljs-built_in">string</span>[] = stringBreaker(str, { width: <span class="hljs-number">10</span>, lenOpt: widthFlags.nearestWord });
+<span class="hljs-keyword">const</span> strResult = result.join(<span class="hljs-string">'\n'</span>);
+<span class="hljs-built_in">console</span>.log(strResult);</code></pre>
+								<div>On this day.&#5760;</div>
+								<div>For this morning,</div>
+								<div>when Gregor</div>
+								<div>Samsa woke</div>
+								<div>from troubled</div>
+								<div>dreams; he</div>
+								<div>found himself</div>
+								<div>transformed.</div>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
 					<a name="none" class="tsd-anchor"></a>
 					<h3>none</h3>
 					<div class="tsd-signature tsd-kind-icon">none<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Amourspirit/node-string-breaker/blob/d3928f3/src/main.ts#L45">main.ts:45</a></li>
+							<li>Defined in <a href="https://github.com/Amourspirit/node-string-breaker/blob/c583f58/src/main.ts#L45">main.ts:45</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -143,7 +182,7 @@
 					<div class="tsd-signature tsd-kind-icon">surrogate<wbr>Pair<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;1 &lt;&lt; 1</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Amourspirit/node-string-breaker/blob/d3928f3/src/main.ts#L55">main.ts:55</a></li>
+							<li>Defined in <a href="https://github.com/Amourspirit/node-string-breaker/blob/c583f58/src/main.ts#L55">main.ts:55</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -185,6 +224,9 @@
 						<ul>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
 								<a href="_main_.widthflags.html#fullwidth" class="tsd-kind-icon">fullwidth</a>
+							</li>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="_main_.widthflags.html#nearestword" class="tsd-kind-icon">nearest<wbr>Word</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
 								<a href="_main_.widthflags.html#none" class="tsd-kind-icon">none</a>
