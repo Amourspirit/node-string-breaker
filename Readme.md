@@ -209,11 +209,13 @@ const strResult = result.join('\n');
 console.log(strResult);
 ```
 
-On this day.  
-For this morning,  
-when Gregor  
-Samsa woke  
-from troubled  
-dreams; he  
-found himself  
-transformed.  
+```text
+On this day.
+For this morning,
+when Gregor
+Samsa woke
+from troubled
+dreams; he
+found himself
+transformed.
+```
