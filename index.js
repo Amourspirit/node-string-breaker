@@ -29,6 +29,7 @@ var widthFlags;
     widthFlags[widthFlags["none"] = 0] = "none";
     widthFlags[widthFlags["fullwidth"] = 1] = "fullwidth";
     widthFlags[widthFlags["surrogatePair"] = 2] = "surrogatePair";
+    widthFlags[widthFlags["nearestWord"] = 4] = "nearestWord";
 })(widthFlags = exports.widthFlags || (exports.widthFlags = {}));
 exports.stringBreaker = function (str, opt) {
     if (typeof str !== 'string') {
@@ -146,8 +147,9 @@ var breakStrByCodePoint = function (str, opt) {
     var noBom = false;
     var respectWidth = false;
     var respectSurrogagePair = false;
+    var respectNearstWord = false;
     if (opt.lenOpt !== undefined) {
-        var fullMask = 3; 
+        var fullMask = 7; 
         if (opt.lenOpt < widthFlags.none || opt.lenOpt > fullMask) {
             throw new RangeError("stringBreaker: widthflags enum out of range. Expected value to be from " + widthFlags.none + " to " + fullMask);
         }
@@ -156,6 +158,9 @@ var breakStrByCodePoint = function (str, opt) {
         }
         if ((opt.lenOpt & widthFlags.surrogatePair) === widthFlags.surrogatePair) {
             respectSurrogagePair = true;
+        }
+        if ((opt.lenOpt & widthFlags.nearestWord) === widthFlags.nearestWord) {
+            respectNearstWord = true;
         }
     }
     if (opt.noBOM === true) {
@@ -185,6 +190,11 @@ var breakStrByCodePoint = function (str, opt) {
         if (isSurrogatePair(cp) === true) {
             i++;
         }
+        if (respectNearstWord === true && ln.length === 0) {
+            if (isWhiteSpace(cp) === true && isPrintableWhiteSpace(cp) === false) {
+                continue;
+            }
+        }
         width++;
         if (respectWidth === true && utf16_char_codes_1.codePointFullWidth(cp) === true) {
             width++;
@@ -192,7 +202,27 @@ var breakStrByCodePoint = function (str, opt) {
         if (respectSurrogagePair === true && isSurrogatePair(cp) === true) {
             width++;
         }
-        ln.push(char);
+        if (respectNearstWord === true) {
+            if (isWhiteSpace(cp) === false) {
+                ln.push(char);
+                continue;
+            }
+            else {
+                if (isNonBreakSpace(cp) === true) {
+                    ln.push(char);
+                    continue;
+                }
+                if (isPrintableWhiteSpace(cp) === true) {
+                    ln.push(char);
+                }
+                else if (width < maxWidth) {
+                    ln.push(char);
+                }
+            }
+        }
+        else {
+            ln.push(char);
+        }
         if (width >= maxWidth) {
             lines.push(ln.join(''));
             ln = [];
@@ -204,6 +234,51 @@ var breakStrByCodePoint = function (str, opt) {
         ln = [];
     }
     return lines;
+};
+var isZSpace = function (num) {
+    var z = [
+        0x0020,
+        0x00A0,
+        0x1680,
+        0x202F,
+        0x205F,
+        0x3000
+    ];
+    if (z.indexOf(num) !== -1) {
+        return true;
+    }
+    if (num >= 0x2000 && num <= 0x200A) {
+        return true;
+    }
+    return false;
+};
+var isWhiteSpace = function (num) {
+    var w = [
+        0x0085,
+        0x2029
+    ];
+    if (w.indexOf(num) !== -1) {
+        return true;
+    }
+    if (num >= 0x0009 && num <= 0x000D) {
+        return true;
+    }
+    if (isZSpace(num) === true) {
+        return true;
+    }
+    return false;
+};
+var isNonBreakSpace = function (num) {
+    if (num === 0x00A0 || num === 0x202F) {
+        return true;
+    }
+    return false;
+};
+var isPrintableWhiteSpace = function (num) {
+    if (num === 0x1680) {
+        return true;
+    }
+    return false;
 };
 var removeLnBr = function (str) {
     if (str.length === 0) {

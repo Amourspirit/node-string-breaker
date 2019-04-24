@@ -49,7 +49,33 @@ export declare enum widthFlags {
      * Surrogae Pairs will count for two positions
      * @see {@link https://en.wikipedia.org/wiki/UTF-16}
      */
-    surrogatePair = 2
+    surrogatePair = 2,
+    /**
+     * When split using [width]{@link IStringBreakOpt.width} and this flag is set then the elements in the array
+     * will split where there is a whitespace and not before. If the whitespace is
+     * a printing char as in the case of \u1680 then it will be include at the end of the element:
+     * Otherwise the whitespace is removed from the end of the element;
+     * <div>&nbsp;</div>
+     * Elemnets will not start with a whitespace unless that whitespace happens to be a printalbe whitespace
+     * such as \u1680. For practical purposes all lines will not start with a whitespace.
+     * @example
+  ```typescript
+  
+  var str = 'On this\u1680day.\u1680For this morning, when Gregor\u3000Samsa woke from troubled dreams; he found himself transformed.';
+  const result: string[] = stringBreaker(str, { width: 10, lenOpt: widthFlags.nearestWord });
+  const strResult = result.join('\n');
+  console.log(strResult);
+  ```
+   * <div>On this day.&#5760;</div>
+   * <div>For this morning,</div>
+   * <div>when Gregor</div>
+   * <div>Samsa woke</div>
+   * <div>from troubled</div>
+   * <div>dreams; he</div>
+   * <div>found himself</div>
+   * <div>transformed.</div>
+   */
+    nearestWord = 4
 }
 /**
  * Options for {@link stringBreaker}
@@ -232,5 +258,32 @@ const x = stringBreaker(strSrc, { splitOpt: splitByOpt.word });
 //        'tonight.','I','like','full','moons!' ]
 
 ```
+ *
+ * Example split by width and preserve words
+ * <div>&nbsp;</div>
+ * When split using [width]{@link IStringBreakOpt.width} and flag {@link widthFlags.nearestWord} the elements in the array
+ * will split where there is a whitespace and not before. If the whitespace is
+ * a printing char as in the case of \u1680 then it will be include at the end of the element:
+ * Otherwise the whitespace is removed from the end of the element;
+ * <div>&nbsp;</div>
+ * Elemnets will not start with a whitespace unless that whitespace happens to be a printalbe whitespace
+ * such as \u1680. For practical purposes all lines will not start with a whitespace.
+ *
+```typescript
+import { stringBreaker } from 'string-breaker';
+
+var str = 'On this\u1680day.\u1680For this morning, when Gregor\u3000Samsa woke from troubled dreams; he found himself transformed.';
+const result: string[] = stringBreaker(str, { width: 10, lenOpt: widthFlags.nearestWord });
+const strResult = result.join('\n');
+console.log(strResult);
+```
+ * <div>On this day.&#5760;</div>
+ * <div>For this morning,</div>
+ * <div>when Gregor</div>
+ * <div>Samsa woke</div>
+ * <div>from troubled</div>
+ * <div>dreams; he</div>
+ * <div>found himself</div>
+ * <div>transformed.</div>
  */
 export declare const stringBreaker: (str: string, opt?: number | IStringBreakOpt | undefined) => string[];
