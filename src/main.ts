@@ -52,7 +52,33 @@ export enum widthFlags {
    * Surrogae Pairs will count for two positions
    * @see {@link https://en.wikipedia.org/wiki/UTF-16}
    */
-  surrogatePair = 1 << 1
+  surrogatePair = 1 << 1,
+  /**
+   * When split using [width]{@link IStringBreakOpt.width} and this flag is set then the elements in the array
+   * will split where there is a whitespace and not before. If the whitespace is
+   * a printing char as in the case of \u1680 then it will be include at the end of the element:
+   * Otherwise the whitespace is removed from the end of the element;
+   * <div>&nbsp;</div>
+   * Elemnets will not start with a whitespace unless that whitespace happens to be a printalbe whitespace
+   * such as \u1680. For practical purposes all lines will not start with a whitespace.
+   * @example
+```typescript
+
+var str = 'On this\u1680day.\u1680For this morning, when Gregor\u3000Samsa woke from troubled dreams; he found himself transformed.';
+const result: string[] = stringBreaker(str, { width: 10, lenOpt: widthFlags.nearestWord });
+const strResult = result.join('\n');
+console.log(strResult);
+```
+ * <div>On this day.&#5760;</div>
+ * <div>For this morning,</div>
+ * <div>when Gregor</div>
+ * <div>Samsa woke</div>
+ * <div>from troubled</div>
+ * <div>dreams; he</div>
+ * <div>found himself</div>
+ * <div>transformed.</div>
+ */
+  nearestWord = 1 << 2
 }
 // #endregion
 
@@ -241,6 +267,33 @@ const x = stringBreaker(strSrc, { splitOpt: splitByOpt.word });
 //        'tonight.','I','like','full','moons!' ]
 
 ```
+ * 
+ * Example split by width and preserve words
+ * <div>&nbsp;</div>
+ * When split using [width]{@link IStringBreakOpt.width} and flag {@link widthFlags.nearestWord} the elements in the array
+ * will split where there is a whitespace and not before. If the whitespace is
+ * a printing char as in the case of \u1680 then it will be include at the end of the element:
+ * Otherwise the whitespace is removed from the end of the element;
+ * <div>&nbsp;</div>
+ * Elemnets will not start with a whitespace unless that whitespace happens to be a printalbe whitespace
+ * such as \u1680. For practical purposes all lines will not start with a whitespace.
+ *
+```typescript
+import { stringBreaker } from 'string-breaker';
+
+var str = 'On this\u1680day.\u1680For this morning, when Gregor\u3000Samsa woke from troubled dreams; he found himself transformed.';
+const result: string[] = stringBreaker(str, { width: 10, lenOpt: widthFlags.nearestWord });
+const strResult = result.join('\n');
+console.log(strResult);
+```
+ * <div>On this day.&#5760;</div>
+ * <div>For this morning,</div>
+ * <div>when Gregor</div>
+ * <div>Samsa woke</div>
+ * <div>from troubled</div>
+ * <div>dreams; he</div>
+ * <div>found himself</div>
+ * <div>transformed.</div>
  */
 export const stringBreaker = (str: string, opt?: IStringBreakOpt | number): string[] => {
   if (typeof str !== 'string') {
@@ -386,10 +439,11 @@ const breakStrByCodePoint = (str: string, opt: IStringBreakOpt): string[] => {
   let noBom: boolean = false;
   let respectWidth: boolean = false;
   let respectSurrogagePair = false;
+  let respectNearstWord = false;
   
   if (opt.lenOpt !== undefined) {
     // enums can be assigned any arbitrary number
-    const fullMask = 3; // widthFlags.fullwidth | widthFlags.surrogatePair
+    const fullMask = 7; // widthFlags.fullwidth | widthFlags.surrogatePair | widthFlags.nearestWord
     if (opt.lenOpt < widthFlags.none || opt.lenOpt > fullMask) {
       throw new RangeError(`stringBreaker: widthflags enum out of range. Expected value to be from ${widthFlags.none} to ${fullMask}`);
     }
@@ -398,6 +452,9 @@ const breakStrByCodePoint = (str: string, opt: IStringBreakOpt): string[] => {
     }
     if ((opt.lenOpt & widthFlags.surrogatePair) === widthFlags.surrogatePair) {
       respectSurrogagePair = true;
+    }
+    if ((opt.lenOpt & widthFlags.nearestWord) === widthFlags.nearestWord) {
+      respectNearstWord = true;
     }
   }
   
@@ -430,6 +487,14 @@ const breakStrByCodePoint = (str: string, opt: IStringBreakOpt): string[] => {
     if (isSurrogatePair(cp) === true) {
       i++;
     }
+    if (respectNearstWord === true && ln.length === 0) {
+      // when breaking using nearest word whitespace should be ignored
+      // if it is a the beinning of a line.
+      if (isWhiteSpace(cp) === true && isPrintableWhiteSpace(cp) === false) {
+        // don't worry about non-breaking spaces.they don't be long at the start of a line
+        continue;
+      }
+    }
     width++;
     if (respectWidth === true && codePointFullWidth(cp) === true) {
       width++;
@@ -437,8 +502,30 @@ const breakStrByCodePoint = (str: string, opt: IStringBreakOpt): string[] => {
     if (respectSurrogagePair === true && isSurrogatePair(cp) === true) {
       width++;
     }
-    ln.push(char);
     
+    if (respectNearstWord === true) {
+      // keep adding to ln until we reach the end or a word or line
+      if (isWhiteSpace(cp) === false) {
+        ln.push(char);
+        continue;
+      } else {
+        // if it is a non breaking whitespace add it and continue
+        if (isNonBreakSpace(cp) === true) {
+          ln.push(char);
+          continue;
+        }
+        // if it is a printable whites space then add it and continue
+        if (isPrintableWhiteSpace(cp) === true) {
+          ln.push(char);
+          // do no continue let the width be tested
+        } else if (width < maxWidth) {
+          // other this is a non printing whitespace include it if we are not at maxWidth yet
+          ln.push(char);
+        }
+      }
+    } else {
+      ln.push(char);
+    }
    if (width >= maxWidth) {
       lines.push(ln.join(''));
       ln = [];
@@ -451,6 +538,78 @@ const breakStrByCodePoint = (str: string, opt: IStringBreakOpt): string[] => {
     ln = [];
   }
   return lines;
+}
+/**
+ * @hidden
+ * Test it see if a number is in the range of unicode z space
+ * @param num a number representing a unicode character
+ * @see [Unicode-Zs]{@link https://www.fileformat.info/info/unicode/category/Zs/list.htm}
+ */
+const isZSpace = (num: number): boolean => {
+  const z: number[] = [
+    0x0020,
+    0x00A0,
+    0x1680,
+    0x202F,
+    0x205F,
+    0x3000
+  ];
+  if(z.indexOf(num) !== -1) {
+    return true;
+  }
+  if (num >= 0x2000 && num <= 0x200A) {
+    return true;
+  }
+  return false;
+}
+/**
+ * @hidden
+ * Test it see if a number is in the range of unicode whitespace
+ * @param num a number representing a unicode character
+ * @see [wekipedia]{@link https://en.wikipedia.org/wiki/Whitespace_character}
+ */
+const isWhiteSpace = (num: number): boolean => {
+  const w: number[] = [
+    0x0085,
+    0x2029
+  ];
+  if (w.indexOf(num) !== -1) {
+    return true;
+  }
+  if (num >= 0x0009 && num <= 0x000D) {
+    return true;
+  }
+  if (isZSpace(num) === true) {
+    return true;
+  }
+  return false
+}
+/**
+ * @hidden
+ * Test to see if a unicode number is a non-breaking space
+ * @param num a number representing a unicode character
+ */
+const isNonBreakSpace = (num: number): boolean => {
+  if (num === 0x00A0 || num === 0x202F) {
+    return true;
+  }
+  return false;
+}
+/**
+ * @hidden
+ * Test to see of a unicode number is a printable Whitespace
+ * @param num a number representing a unicode character
+ * @description
+ * This is the only whitespace char that I a aware of that shows
+ * up as a visible character on the screen. I printed a text file with \u1680 at the end
+ * of a line and it did indeed print.
+ * Visual studio code removes this char in the editor if it is at the end of a line.
+ */
+const isPrintableWhiteSpace = (num: number): boolean => {
+  if (num === 0x1680) {
+      return true;
+    }
+    return false;
 }
 /**
  * @hidden

@@ -337,4 +337,28 @@ describe('String Breaker test', () => {
     expect(result.length).equal(0);
     done();
   });
+  it.only('should read line\
+  \nOn this\u1680day.\u1680For this morning, when Gregor\u3000Samsa woke from troubled dreams; he found himself transformed.\
+  \nBreak that line into a width of 10 but not break until a whitespace is encoutered.\
+  \nWhite space at the end of each line is excluded unless it it a printing whitespace such as \u1680\
+  \nWrites to temp file that madtches fixture simple_nearest_word.txt', (done) => {
+      let strSrc: string = 'On this\u1680day.\u1680For this morning, when Gregor\u3000Samsa woke from troubled dreams; he found himself transformed.';
+    let result = stringBreaker(strSrc, { width: 10, lenOpt: widthFlags.nearestWord });
+    let str: string = result.join('\n');
+    fs.writeFileSync(`${outDir}/simple_nearest_word.txt`, str, 'utf8');
+      let src = fs.readFileSync(`${fixDir}/simple_nearest_word.txt`);
+      let dest = fs.readFileSync(`${outDir}/simple_nearest_word.txt`);
+    expect(src.equals(dest)).equal(true);
+    done();
+  });
+  it('should read fixture t1000_lf.txt write a tmp file that break on word or end of line', (done) => {
+    let strSrc: string = fs.readFileSync(t1000, 'utf8');
+    let result = stringBreaker(strSrc, { lenOpt: widthFlags.nearestWord });
+    let str: string = result.join('\n');
+    fs.writeFileSync(`${outDir}/t1000_lf_nearest_word.txt`, str, 'utf8');
+    let src = fs.readFileSync(`${fixDir}/t1000_lf_nearest_word.txt`);
+    let dest = fs.readFileSync(`${outDir}/t1000_lf_nearest_word.txt`);
+    expect(src.equals(dest)).equal(true);
+    done();
+  });
 });

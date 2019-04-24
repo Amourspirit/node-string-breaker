@@ -24,6 +24,10 @@
 
 For more information view the [Documentation](https://amourspirit.github.io/node-string-breaker/index.html)
 
+## Repository
+
+View the source code on [github](https://github.com/Amourspirit/node-string-breaker)
+
 ### Install
 
 ```bash
@@ -190,3 +194,26 @@ x = stringBreaker(str , {
 // '!!'  // \u21 \u21 two halfwidth
 // ]
 ```
+
+Example split by width and preserve words
+
+When split using [width](https://amourspirit.github.io/node-string-breaker/interfaces/main_.istringbreakopt.html#width) and flag [widthFlags.nearestWord](https://amourspirit.github.io/ode-string-breaker/enums/_main_.widthflags.html#nearestword) the elements in the array
+will split where there is a whitespace and not before.
+
+```typescript
+import { stringBreaker } from 'string-breaker';
+
+var str = 'On this day. For this morning, when Gregor\u3000Samsa woke from troubled dreams; he found himself transformed.';
+const result: string[] = stringBreaker(str, { width: 10, lenOpt: widthFlags.nearestWord });
+const strResult = result.join('\n');
+console.log(strResult);
+```
+
+On this day.
+For this morning,  
+when Gregor  
+Samsa woke  
+from troubled  
+dreams; he  
+found himself  
+transformed.  
