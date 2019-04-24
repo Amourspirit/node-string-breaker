@@ -197,7 +197,7 @@ x = stringBreaker(str , {
 
 Example split by width and preserve words
 
-When split using [width](https://amourspirit.github.io/node-string-breaker/interfaces/main_.istringbreakopt.html#width) and flag [widthFlags.nearestWord](https://amourspirit.github.io/ode-string-breaker/enums/_main_.widthflags.html#nearestword) the elements in the array
+When split using [width](https://amourspirit.github.io/node-string-breaker/interfaces/_main_.istringbreakopt.html#width) and flag [widthFlags.nearestWord](https://amourspirit.github.io/node-string-breaker/enums/_main_.widthflags.html#nearestword) the elements in the array
 will split where there is a whitespace and not before.
 
 ```typescript
