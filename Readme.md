@@ -209,7 +209,7 @@ const strResult = result.join('\n');
 console.log(strResult);
 ```
 
-On this day.
+On this day.  
 For this morning,  
 when Gregor  
 Samsa woke  
