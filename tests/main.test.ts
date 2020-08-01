@@ -337,7 +337,7 @@ describe('String Breaker test', () => {
     expect(result.length).equal(0);
     done();
   });
-  it.only('should read line\
+  it('should read line\
   \nOn this\u1680day.\u1680For this morning, when Gregor\u3000Samsa woke from troubled dreams; he found himself transformed.\
   \nBreak that line into a width of 10 but not break until a whitespace is encoutered.\
   \nWhite space at the end of each line is excluded unless it it a printing whitespace such as \u1680\

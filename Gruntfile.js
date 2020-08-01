@@ -5,6 +5,7 @@
 module.exports = function (grunt) {
   var isWin = process.platform === "win32";
   var nodeMajor = _getNodeMajor();
+  var packageData = grunt.file.readJSON('package.json');
   // #region Functions
   function _getNodeMajor() {
     // https://www.regexpal.com/?fam=108819
@@ -69,6 +70,7 @@ module.exports = function (grunt) {
       dirs: ['scratch', 'dist', 'lib'],
       test: ['scratch'],
       docs: ['docs'],
+      min: ['./min/*'],
       files: [
         './index.js',
         './strbrk.min.js',
@@ -85,7 +87,9 @@ module.exports = function (grunt) {
     },
 
     shell: {
-      tsc: 'tsc'
+      tsc: 'tsc',
+      tsces6: 'tsc @tsconfiges3.txt',
+      uglifyjs: 'npx uglifyjs --compress --mangle --output ./min/node_string_breaker.js -- scratch/es6/main.js'
     },
     remove_comments: {
       js: {
@@ -102,17 +106,6 @@ module.exports = function (grunt) {
         dest: 'scratch/nc/'
       },
     },
-    uglify: {
-      js: {
-        options: {
-          sourceMap: true,
-          mangle: true,
-        },
-        files: {
-          "strbrk.min.js": 'lib/main.js'
-        }
-      }
-    },
     copy: {
       d: {
         files: [{
@@ -125,6 +118,47 @@ module.exports = function (grunt) {
           src: './scratch/nc/main.js',
           dest: './index.js'
         }],
+      },
+      es6: {
+        files: [{
+          src: 'scratch/es6/main.js.map',
+          dest: 'min/node_string_breaker.js.map'
+        }]
+      }
+    },
+    replace: {
+      es6_utf16: {
+        options: {
+          patterns: [
+            {
+              match: /(import\s[{}\sa-zA-Z0-9_\-,]+\sfrom\s)'utf16-char-codes';/g,
+              replacement: function (str, match) {
+                // return typeof(x)+' ' + y +' // something funny';
+                return match+'\''+packageData._utf16_char_codes_url+'\';';
+              },
+            }
+          ]
+        },
+        files: [
+          { expand: true, flatten: true, src: ['lib/es6/main.js'], dest: 'scratch/es6/' }
+        ]
+      },
+      es6_map: {
+        options: {
+          patterns: [
+            {
+              match: /"sources":\["\.\.\/\.\.\/(.*?)"]/g,
+              replacement: '"sources":["../$1"]'
+            },
+            {
+              match: /"file":"main.js"/g,
+              replacement: '"file":"node_string_breaker.js"'
+            }
+          ]
+        },
+        files: [
+          { expand: true, flatten: true, src: ['lib/es6/main.js.map'], dest: 'scratch/es6/' }
+        ]
       }
     }
   });
@@ -133,8 +167,8 @@ module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
   grunt.loadNpmTasks('grunt-env');
   grunt.loadNpmTasks('grunt-remove-comments');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-replace');
   // #endregion
   grunt.registerTask('default', [
     'build'
@@ -188,6 +222,15 @@ module.exports = function (grunt) {
       done(err);
     });
   });
+  grunt.registerTask('es6', [
+    'clean:dirs',
+    'clean:min',
+    'shell:tsces6',
+    'replace:es6_utf16',
+    'replace:es6_map',
+    'shell:uglifyjs',
+    'copy:es6'
+  ]);
   grunt.registerTask('build', [
     'env:build',
     /*
@@ -206,7 +249,6 @@ module.exports = function (grunt) {
      * run tsc, outputs to /lib
      */
     'shell:tsc',
-    'uglify:js',
     'remove_comments:js',
     /**
      * Task shell: prettier

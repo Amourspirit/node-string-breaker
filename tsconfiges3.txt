@@ -1,0 +1,10 @@
+--lib es5
+--target es2015
+--module es6
+--baseUrl .
+--outDir ./lib/es6
+--moduleResolution Node
+--strictNullChecks
+--sourceMap
+--declaration
+
