@@ -7,4 +7,5 @@
 --strictNullChecks
 --sourceMap
 --declaration
-
+--pretty
+--removeComments

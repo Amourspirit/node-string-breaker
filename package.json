@@ -5,7 +5,7 @@
   "main": "index.js",
   "types": "./index.d.ts",
   "homepage": "https://amourspirit.github.io/node-string-breaker/",
-  "_utf16_char_codes_url": "https://cdn.jsdelivr.net/gh/Amourspirit/node-utf16-char-codes@7c2d84959fd5ed206c820cbe00a714dda3e91f44/min/node_utf16_char_codes.min.js",
+  "_utf16_char_codes_url": "https://cdn.jsdelivr.net/gh/Amourspirit/node-utf16-char-codes@0ce6dad4c70cbb65b11b15e64ec4648ec5a02095/js/node_utf16_char_codes.min.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/Amourspirit/node-string-breaker.git"
@@ -53,6 +53,7 @@
     "grunt-remove-comments": "^0.1.6",
     "grunt-replace": "^1.0.1",
     "grunt-shell": "^3.0.1",
+    "grunt-terser": "^1.0.0",
     "grunt-tslint": "^5.0.2",
     "load-grunt-tasks": "^5.1.0",
     "mkdirp": "^1.0.4",
@@ -62,8 +63,7 @@
     "ts-node": "^8.10.2",
     "tslint": "^6.1.3",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.9.7",
-    "uglify-es": "^3.3.9"
+    "typescript": "^3.9.7"
   },
   "dependencies": {
     "utf16-char-codes": "^1.0.2"
