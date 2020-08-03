@@ -250,7 +250,7 @@ module.exports = function (grunt) {
   });
   grunt.registerTask('append_map_es6', function () {
     var file = 'scratch/es6/js/node_string_breaker.min.js';
-    var strMap = '\n//# sourceMappingURL=node_string_breaker.js.map';
+    var strMap = '\n//# sourceMappingURL=node_string_breaker.min.js.map';
     appendToFile(file, strMap);
   });
   grunt.registerTask('es6', [
