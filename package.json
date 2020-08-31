@@ -1,9 +1,10 @@
 {
   "name": "string-breaker",
-  "version": "0.4.2",
+  "version": "1.0.0",
   "description": "Breaks string into string array with many options",
-  "main": "index.js",
-  "types": "./index.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "typings": "dist/index.d.ts",
   "homepage": "https://amourspirit.github.io/node-string-breaker/",
   "_utf16_char_codes_url": "https://cdn.jsdelivr.net/gh/Amourspirit/node-utf16-char-codes@0ce6dad4c70cbb65b11b15e64ec4648ec5a02095/js/node_utf16_char_codes.min.js",
   "repository": {
@@ -14,16 +15,23 @@
     "url": "https://github.com/Amourspirit/node-string-breaker/issues"
   },
   "scripts": {
-    "test": "grunt build && grunt test",
-    "mtest": "mocha -r ts-node/register tests/**/*.test.ts"
+    "build": "rm -rf dist && rm -rf lib && rollup -c && npx tsc && rm -rf lib",
+    "prepublishOnly": "npm run typecheck && npm run build && npm run test",
+    "start": "nodemon --exec babel-node ./src/index.js",
+    "test": "rm -rf scratch && jest 'tests/'",
+    "typecheck": "tsc --noEmit",
+    "testw": "jest --watch tests/"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run typecheck && npm run build && npm run test"
+    }
   },
   "files": [
-    "index.js",
-    "index.d.ts",
-    "LICENSE"
+    "dist"
   ],
   "engines": {
-    "node": ">=0.10"
+    "node": ">=8"
   },
   "keywords": [
     "break-string",
@@ -33,39 +41,37 @@
     "string-wrapper",
     "string"
   ],
-  "author": "Paul Moss",
+  "author": "Paul Moss <Amourspirit@users.noreply.github.com> (https://github.com/Amourspirit)",
   "license": "MIT",
   "devDependencies": {
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.11.4",
+    "@babel/plugin-transform-runtime": "^7.11.0",
+    "@babel/preset-env": "^7.11.0",
+    "@babel/preset-typescript": "^7.10.4",
+    "@babel/register": "^7.10.5",
     "@ephox/tslint-rules": "^1.1.1",
+    "@rollup/plugin-babel": "^5.2.0",
+    "@rollup/plugin-node-resolve": "^9.0.0",
     "@types/ansi-regex": "^5.0.0",
-    "@types/chai": "^4.2.12",
-    "@types/is-fullwidth-code-point": "^3.0.0",
+    "@types/jest": "^26.0.10",
     "@types/mkdirp": "^1.0.1",
-    "@types/mocha": "^8.0.1",
     "@types/randomstring": "^1.1.6",
-    "@types/sinon": "^9.0.4",
-    "chai": "^4.2.0",
-    "grunt": "^1.2.1",
-    "grunt-cli": "^1.3.2",
-    "grunt-contrib-clean": "^2.0.0",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-env": "^1.0.1",
-    "grunt-remove-comments": "^0.1.6",
-    "grunt-replace": "^1.0.1",
-    "grunt-shell": "^3.0.1",
-    "grunt-terser": "^1.0.0",
-    "grunt-tslint": "^5.0.2",
+    "husky": "^4.2.5",
+    "jest": "^26.4.2",
     "load-grunt-tasks": "^5.1.0",
     "mkdirp": "^1.0.4",
-    "mocha": "^8.1.0",
+    "nodemon": "^2.0.4",
     "randomstring": "^1.1.5",
-    "sinon": "^9.0.2",
-    "ts-node": "^8.10.2",
+    "rollup": "^2.26.8",
+    "rollup-plugin-size-snapshot": "^0.12.0",
+    "ts-node": "^9.0.0",
     "tslint": "^6.1.3",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.9.7"
+    "typescript": "^4.0.2"
   },
   "dependencies": {
-    "utf16-char-codes": "^1.0.2"
+    "@babel/runtime": "^7.11.2",
+    "utf16-char-codes": "^2.1.0"
   }
 }
