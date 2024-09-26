@@ -63,7 +63,7 @@
     "mkdirp": "^1.0.4",
     "nodemon": "^2.0.4",
     "randomstring": "^1.1.5",
-    "rollup": "^2.26.8",
+    "rollup": "^3.29.5",
     "rollup-plugin-size-snapshot": "^0.12.0",
     "ts-node": "^9.0.0",
     "tslint": "^6.1.3",
